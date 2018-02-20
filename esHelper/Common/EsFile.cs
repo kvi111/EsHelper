@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -146,14 +148,78 @@ namespace esHelper.Common
             }
         }
 
-        public static async Task<String> GetURL(String url)
+        public static async Task<String> GetURL(String url, String data = "")
         {
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
+                    if (string.IsNullOrEmpty(data) == false)
+                    {
+                        client.DefaultRequestHeaders.Add("data", data);
+                    }
                     return await client.GetStringAsync(url);//得到返回字符流
                 }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public static async Task<String> PostURL(String url, String data = "")
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    //if (string.IsNullOrEmpty(data) == false)
+                    //{
+                    //    client.DefaultRequestHeaders.Add("data", data);
+                    //}
+                    ByteArrayContent bac = new ByteArrayContent(new byte[] { });
+                    if (string.IsNullOrEmpty(data) == false)
+                    {
+                        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
+                        bac = new ByteArrayContent(bytes);
+                    }
+                    HttpResponseMessage res = await client.PostAsync(url, bac);//得到返回字符流
+                    return await res.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static async Task<String> PutURL(String url, String data = "")
+        {
+            try
+            {
+                //HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Put, "/a");
+                //httpRequest.Content = new StringContent(data, Encoding.UTF8, "application/json");
+
+                //using (HttpClientHandler handler = new HttpClientHandler() { Credentials = new NetworkCredential("elastic", "myelastic") })
+                //{
+
+                using (HttpClient client = new HttpClient())  //handler
+                {
+                    //client.BaseAddress = new Uri("http://localhost:9201/");
+                    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+
+                    ByteArrayContent bac = new ByteArrayContent(new byte[] { });
+                    if (string.IsNullOrEmpty(data) == false)
+                    {
+                        bac.Headers.Add("Content-Type", "application/json");
+                        byte[] bytes = Encoding.UTF8.GetBytes(data);
+                        bac = new ByteArrayContent(bytes);
+                    }
+                    //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
+                    HttpResponseMessage res = await client.PutAsync(url, bac);//得到返回字符流
+                    return await res.Content.ReadAsStringAsync();
+                }
+
+                //}
             }
             catch (Exception ex)
             {
@@ -212,6 +278,73 @@ namespace esHelper.Common
             }
         }
 
+        /// <summary>
+        /// 获取索引列表
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static async Task<FuncResult> CreateIndex(String url, String indexName, String json)
+        {
+            try
+            {
+                string result = await EsFile.PutURL(url + "/" + indexName, json);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return new FuncResult() { Success = false, Message = "put error" };
+                }
+                JObject jobj = JObject.Parse(result);
+                if (jobj != null)
+                {
+                    if (jobj.Root["acknowledged"] != null)
+                    {
+                        return new FuncResult() { Success = true };
+                    }
+                    else if (jobj.Root["error"] != null && jobj.Root["error"]["reason"] != null)
+                    {
+                        return new FuncResult() { Success = false, Message = jobj.Root["error"]["reason"].ToString() };
+                    }
+                }
+                return new FuncResult() { Success = false, Message = "error" };
+            }
+            catch
+            {
+                return new FuncResult() { Success = false, Message = "create index error!" };
+            }
+        }
 
+        /// <summary>
+        /// 获取索引数据
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="indexName">索引名称</param>
+        /// <param name="json"></param>
+        /// <param name="startIndex">开始位置</param>
+        /// <param name="pageCount">每页数量</param>
+        /// <returns></returns>
+        public static async Task<JObject> GetIndexData(String url, String indexName, int startIndex = 0, int pageSize = 20)
+        {
+            try
+            {
+                String json = "{\"query\": {\"match_all\": { }},\"from\": " + startIndex.ToString() + ", \"size\": " + pageSize.ToString() + "}";
+                string result = await GetURL(url + "/" + indexName + "/_search", json);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return null;
+                }
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null)
+                {
+                    if (jObj.Root["hits"] != null)
+                    {
+                        return jObj;
+                    }
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

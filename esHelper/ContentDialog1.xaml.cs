@@ -1,21 +1,9 @@
 ﻿using esHelper.Common;
 using Renci.SshNet;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // https://go.microsoft.com/fwlink/?LinkId=234238 上介绍了“内容对话框”项模板
 
@@ -24,6 +12,7 @@ namespace esHelper
     public sealed partial class ContentDialog1 : ContentDialog
     {
         public bool isSuccess = false;
+        public EsConnectionInfo connInfo;
 
         public ContentDialog1()
         {
@@ -32,7 +21,7 @@ namespace esHelper
 
         private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            EsConnectionInfo connInfo = new EsConnectionInfo();
+            connInfo = new EsConnectionInfo();
             connInfo.connectionName = connetionName.Text.Trim() == "" ? esIp.Text.Trim() + "_" + esPort.Text.Trim() : connetionName.Text.Trim();
 
             if (EsFile.checkFileName(connInfo.connectionName) == false)
@@ -119,6 +108,15 @@ namespace esHelper
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+
+        }
+
+        private void isUseSSH_Toggled(object sender, RoutedEventArgs e)
+        {
+            sshIp.IsEnabled = isUseSSH.IsOn;
+            sshPort.IsEnabled = isUseSSH.IsOn;
+            userName.IsEnabled = isUseSSH.IsOn;
+            password.IsEnabled = isUseSSH.IsOn;
         }
     }
 }

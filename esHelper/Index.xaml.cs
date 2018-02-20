@@ -1,19 +1,12 @@
 ﻿using esHelper.Common;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using TreeViewControl;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -26,12 +19,13 @@ namespace esHelper
     /// </summary>
     public sealed partial class Index : Page
     {
+        SortedSet<string> indexNameSet = new SortedSet<string>();
         EsSystemData esdata;
         public Index()
         {
             this.InitializeComponent();
         }
-
+        #region index
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
@@ -89,9 +83,110 @@ namespace esHelper
             InitData(ToggleSwitch1.IsOn);
         }
 
-        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        int i = 0;
+        private async void HyperlinkButtonBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            HyperlinkButton btn = sender as HyperlinkButton;
+            JObject jObject = await EsFile.GetIndexData(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString(), 0, 50);
+            pivot1.SelectedIndex = 1;
+            if (jObject != null && jObject.Root["hits"]["hits"] != null)
+            {
+                JArray arrData = jObject.Root["hits"]["hits"] as JArray;
+                if (arrData.Count > 0)
+                {
+                    i = 0;
+
+                    //gridData.Background = new SolidColorBrush(Colors.Transparent);
+                    //gridData.BorderBrush = new SolidColorBrush(Colors.Red);
+                    //gridData.BorderThickness = new Thickness(1);
+                    gridData.ColumnSpacing = 10;
+                    gridData.RowSpacing = 5;
+                    gridData.Children.Clear();
+                    gridData.RowDefinitions.Clear();
+                    gridData.ColumnDefinitions.Clear();
+
+                    gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行
+                    foreach (JObject jObj in arrData) //行
+                    {
+                        gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行
+                        GetAllProperty(jObj, true, 0);
+                        i++;
+                    }
+                    gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30) }); //添加一行
+                    gridData.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                    //scrollView. = gridData.ActualWidth;
+                    //scrollView.UpdateLayout();
+                    //RowDefinition rd = gridData.RowDefinitions[0];
+                    //rd.SetValue(BackgroundProperty, new SolidColorBrush(Colors.AliceBlue));
+                }
+            }
+        }
+        private void GetAllProperty(JObject jObject, bool isRoot, int j)
+        {
+            foreach (JProperty jpro in jObject.Properties())
+            {
+                if (jpro.Value is JValue)
+                {
+                    if (i == 0)
+                    {
+                        Border border = new Border();
+                        border.Background = new SolidColorBrush(Colors.AliceBlue);
+                        
+                        TextBlock tb = new TextBlock();
+                        tb.Text = jpro.Name;
+                        tb.IsTextSelectionEnabled = true;
+                        tb.FontSize = tb.FontSize + 2;
+
+                        border.Child = tb;
+
+                        gridData.Children.Add(border);
+                        Grid.SetColumn(border, j);
+                        Grid.SetRow(border, i);
+                    }
+
+                    TextBlock tb1 = new TextBlock();
+                    tb1.Text = jpro.Value.ToString();
+                    tb1.IsTextSelectionEnabled = true;
+
+
+                    gridData.Children.Add(tb1);
+                    Grid.SetColumn(tb1, j);
+                    Grid.SetRow(tb1, i + 1);
+
+                    gridData.ColumnDefinitions.Add(new ColumnDefinition() { MinWidth = 100, MaxWidth = 300 }); //添加一列
+                    j++;
+                }
+                else if (jpro.Value is JObject)
+                {
+                    GetAllProperty((JObject)jpro.Value, false, j);
+                }
+            }
+        }
+        private async void AppBarButtonAdd_Click(object sender, RoutedEventArgs e)
+        {
+            ContentDialog_NewIndex cdni = new ContentDialog_NewIndex();
+            cdni.esdata = esdata;
+            await cdni.ShowAsync();
+        }
+        #endregion
+
+        #region browse
+        private void AppBarButtonFirst_Click(object sender, RoutedEventArgs e)
         {
 
         }
+        private void AppBarButtonPrevious_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void AppBarButtonNext_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void AppBarButtonLast_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        #endregion
     }
 }

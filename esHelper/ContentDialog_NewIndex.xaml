@@ -1,0 +1,120 @@
+﻿<ContentDialog
+    x:Class="esHelper.ContentDialog_NewIndex"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:esHelper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Create index"
+    PrimaryButtonText="Ok"
+    SecondaryButtonText="Cancel"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
+    Height="1000"
+    Width="600">
+
+    <StackPanel Orientation="Vertical" Width="500">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Index Name：" Width="150"/>
+            <TextBox HorizontalAlignment="Left" VerticalAlignment="Center" Name="IndexName" Width="300" PlaceholderText=""/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Type Name：" Width="150"/>
+            <TextBox HorizontalAlignment="Left" VerticalAlignment="Center" Name="TypeName" Width="300" Text=""/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+            <StackPanel Orientation="Horizontal">
+                <AppBarButton Label="add" Height="35" Width="35" Click="AppBarButtonAdd_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Add"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="add a field" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <AppBarButton Label="insert" Height="35" Width="35" Click="AppBarButtonInsert_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Forward"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="insert a field" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <AppBarButton Label="remove" Height="35" Width="35" Click="AppBarButtonRemove_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Remove"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="remove a field" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <AppBarSeparator/>
+                <AppBarButton Label="up" Height="35" Width="35">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Upload"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="move up" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <AppBarButton Label="down" Height="35" Width="35">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Download"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="move down" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Background="AliceBlue" Height="35">
+                <TextBlock Width="30"></TextBlock>
+                <TextBlock Width="160" VerticalAlignment="Center" TextAlignment="Center">Field Name</TextBlock>
+                <TextBlock Width="120" VerticalAlignment="Center" TextAlignment="Center">DataType</TextBlock>
+                <TextBlock Width="120" VerticalAlignment="Center" TextAlignment="Center">Analyzer</TextBlock>
+                <TextBlock Width="60" VerticalAlignment="Center" TextAlignment="Center">Index</TextBlock>
+            </StackPanel>
+            <ScrollViewer Height="475" Width="500" VerticalScrollBarVisibility="Visible">
+                <StackPanel Orientation="Vertical" Name="spContent">
+                    <StackPanel Orientation="Horizontal" Height="32">
+                        <StackPanel Width="40" VerticalAlignment="Top">
+                            <RadioButton GroupName="sel" BorderThickness="0.1" Margin="10,0" Checked="RadioButton_Checked"/>
+                        </StackPanel>
+                        <TextBox Width="160" VerticalAlignment="Top" BorderThickness="0.1"></TextBox>
+                        <ComboBox Width="120" BorderThickness="0.1" Name="comboxDataType">
+                            <ComboBoxItem>binary</ComboBoxItem>
+                            <ComboBoxItem>boolean</ComboBoxItem>
+                            <ComboBoxItem>byte</ComboBoxItem>
+                            <ComboBoxItem>date</ComboBoxItem>
+                            <ComboBoxItem>float</ComboBoxItem>
+                            <ComboBoxItem>geo_point</ComboBoxItem>
+                            <ComboBoxItem>geo_shape</ComboBoxItem>
+                            <ComboBoxItem>half_float</ComboBoxItem>
+                            <ComboBoxItem>integer</ComboBoxItem>
+                            <ComboBoxItem>keyword</ComboBoxItem>
+                            <ComboBoxItem>long</ComboBoxItem>
+                            <ComboBoxItem>nested</ComboBoxItem>
+                            <ComboBoxItem>scaled_float</ComboBoxItem>
+                            <ComboBoxItem>short</ComboBoxItem>
+                            <ComboBoxItem IsSelected="True">text</ComboBoxItem>
+                            <ComboBoxItem>double</ComboBoxItem>
+                            <ComboBoxItem>object</ComboBoxItem>
+                        </ComboBox>
+                        <ComboBox Width="120" BorderThickness="0.1" Name="comboxAnalyzer" SelectionChanged="comboxAnalyzer_SelectionChanged">
+                            <ComboBoxItem Content=""/>
+                            <ComboBoxItem Content="ik_max_word"/>
+                            <ComboBoxItem Content="ik_smart"/>
+                            <ComboBoxItem Content="standard"/>
+                            <ComboBoxItem Content="simple"/>
+                            <ComboBoxItem Content="whitespace"/>
+                        </ComboBox>
+                        <CheckBox Width="19" IsChecked="True" VerticalAlignment="Top" Margin="20,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </StackPanel>
+
+    </StackPanel>
+</ContentDialog>

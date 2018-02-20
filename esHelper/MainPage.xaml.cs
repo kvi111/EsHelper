@@ -30,6 +30,7 @@ namespace esHelper
 
             sampleTreeView.TreeViewItemClick += SampleTreeView_TreeViewItemClick;
             sampleTreeView.RightTapped += SampleTreeView_RightTapped;
+            sampleTreeView.DoubleTapped += SampleTreeView_DoubleTapped;
 
             //TreeNode workFolder = CreateFolderNode("Work Documents");
             //workFolder.Add(CreateFileNode("Feature Functional Spec"));
@@ -54,22 +55,37 @@ namespace esHelper
             //sampleTreeView.ContainerContentChanging += SampleTreeView_ContainerContentChanging;
         }
 
+        private void SampleTreeView_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+        {
+            if (e.OriginalSource is ListViewItemPresenter)
+            {
+                ListViewItemPresenter lvip = (ListViewItemPresenter)e.OriginalSource;
+                lastTreeNode = (TreeNode)lvip.Content;
+                EsSystemData data = lastTreeNode.Data as EsSystemData;
+                if (data != null && data.ItemType == EsTreeItemType.esConnection)
+                {
+                    lastTreeNode.IsExpanded = !lastTreeNode.IsExpanded;
+                    Menu_Open_Click(sender, e);
+                }
+            }
+        }
+
         private void SampleTreeView_RightTapped(object sender, Windows.UI.Xaml.Input.RightTappedRoutedEventArgs e)
         {
             if (e.OriginalSource is ListViewItemPresenter)
             {
                 ListViewItemPresenter lvip = (ListViewItemPresenter)e.OriginalSource;
                 lastTreeNode = (TreeNode)lvip.Content;
-
-                //b1.IsEnabled = false;
-                //FlyoutBase.ShowAttachedFlyout(sampleTreeView);
-
-                ItemMenuFlyout.ShowAt(sampleTreeView, e.GetPosition(sampleTreeView));
+                EsSystemData data = lastTreeNode.Data as EsSystemData;
+                if (data != null && data.ItemType == EsTreeItemType.esConnection)
+                {
+                    ItemMenuFlyout.ShowAt(sampleTreeView, e.GetPosition(sampleTreeView));
+                }
             }
             else if (e.OriginalSource is Grid)
             {
-                Grid grid = (Grid)e.OriginalSource;
-                BlankMenuFlyout.ShowAt(sampleTreeView, e.GetPosition(sampleTreeView));
+                //Grid grid = (Grid)e.OriginalSource;
+                //BlankMenuFlyout.ShowAt(sampleTreeView, e.GetPosition(sampleTreeView));
             }
         }
 
@@ -112,7 +128,7 @@ namespace esHelper
         {
             TreeNode obj = (TreeNode)sampleTreeView.SelectedItem;
             obj.IsExpanded = !obj.IsExpanded;
-            contentFrame.Navigate(typeof(BlankPage1), e);
+            //contentFrame.Navigate(typeof(BlankPage1), e);
         }
 
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -153,6 +169,12 @@ namespace esHelper
             {
                 if (lastTreeNode != null && lastTreeNode.Data != null)
                 {
+                    if (lastTreeNode.HasItems)
+                    {
+                        return;
+                        //lastTreeNode.Clear();
+                    }
+
                     EsSystemData esSD = (EsSystemData)lastTreeNode.Data;
 
                     if (esSD.EsConnInfo.isUseSSH)
@@ -169,8 +191,6 @@ namespace esHelper
                         return;
                     }
 
-                    if (lastTreeNode.HasItems) lastTreeNode.Clear();
-
                     AddTreeNodeChild(lastTreeNode);
                 }
             }
@@ -186,7 +206,7 @@ namespace esHelper
             tn.Add(new TreeNode() { Data = new EsSystemData("SysIndex", EsTreeItemType.esSysIndex) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Plugin", EsTreeItemType.esPlugin) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
-            tn.IsExpanded = true;
+            //tn.IsExpanded = true;
         }
 
         private void Menu_Close_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -210,7 +230,9 @@ namespace esHelper
             await cd1.ShowAsync();
             if (cd1.isSuccess)
             {
-                Menu_Refresh_Click(sender, e);
+                //Menu_Refresh_Click(sender, e);
+                TreeNode workFolder = new TreeNode() { Data = new EsSystemData(cd1.connInfo.connectionName, EsTreeItemType.esConnection) { EsConnInfo = cd1.connInfo } };
+                sampleTreeView.RootNode.Add(workFolder);
             }
         }
         private void Menu_Edit_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -249,7 +271,7 @@ namespace esHelper
 
         private void Menu_Help_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            (new MessageDialog("esHelp for ElasticSearch 6！")).ShowAsync();
+            (new MessageDialog("esHelper for ElasticSearch 6！")).ShowAsync();
         }
     }
 }

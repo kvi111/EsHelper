@@ -102,10 +102,15 @@
     <Compile Include="Common\EsFile.cs" />
     <Compile Include="Common\EsIndex.cs" />
     <Compile Include="Common\EsSystemData.cs" />
+    <Compile Include="Common\FuncResult.cs" />
     <Compile Include="Common\GlyphConverter.cs" />
     <Compile Include="Common\EsConnectionInfo.cs" />
+    <Compile Include="Common\RestClient.cs" />
     <Compile Include="ContentDialog1.xaml.cs">
       <DependentUpon>ContentDialog1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ContentDialog_NewIndex.xaml.cs">
+      <DependentUpon>ContentDialog_NewIndex.xaml</DependentUpon>
     </Compile>
     <Compile Include="Index.xaml.cs">
       <DependentUpon>Index.xaml</DependentUpon>
@@ -142,6 +147,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ContentDialog1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ContentDialog_NewIndex.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
