@@ -12,47 +12,7 @@ namespace esHelper
 {
     public class Port
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sshIp">ssh主机ip</param>
-        /// <param name="sshPort">ssh主机端口</param>
-        /// <param name="username">ssh主机用户名</param>
-        /// <param name="password">ssh主机密码</param>
-        /// <param name="lanIp">本地或者远程主机ip</param>
-        /// <param name="lanPort">本地或者远程主机端口</param>
-        /// <returns></returns>
-        public static SshClient GetSshClient(EsConnectionInfo connInfo)
-        {
-            SshClient client;
-            //input.localPort = 8001;//todo：需要去获取本机未用端口
-            try
-            {
-                PasswordConnectionInfo connectionInfo = new PasswordConnectionInfo(connInfo.sshIp, connInfo.sshPort, connInfo.username, connInfo.password);
-                connectionInfo.Timeout = TimeSpan.FromSeconds(30);
-                client = new SshClient(connectionInfo);
-                //client.ErrorOccurred += Client_ErrorOccurred;
-                client.Connect();
-                if (!client.IsConnected)
-                {
-                    throw new Exception("SSH connect failed");
-                }
-
-                var portFwdL = new ForwardedPortLocal(connInfo.localIp, (uint)connInfo.localPort, connInfo.esIp, (uint)connInfo.esPort); //映射到本地端口
-                client.AddForwardedPort(portFwdL);
-                portFwdL.Start();
-
-                if (!client.IsConnected)
-                {
-                    throw new Exception("Port forwarding failed");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return client;
-        }
+        
 
         public static int GetRandAvailablePort()
         {

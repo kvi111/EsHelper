@@ -18,6 +18,47 @@ namespace esHelper.Common
     public class EsFile
     {
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sshIp">ssh主机ip</param>
+        /// <param name="sshPort">ssh主机端口</param>
+        /// <param name="username">ssh主机用户名</param>
+        /// <param name="password">ssh主机密码</param>
+        /// <param name="lanIp">本地或者远程主机ip</param>
+        /// <param name="lanPort">本地或者远程主机端口</param>
+        /// <returns></returns>
+        public static SshClient GetSshClient(EsConnectionInfo connInfo)
+        {
+            SshClient client;
+            //input.localPort = 8001;//todo：需要去获取本机未用端口
+            try
+            {
+                PasswordConnectionInfo connectionInfo = new PasswordConnectionInfo(connInfo.sshIp, connInfo.sshPort, connInfo.username, connInfo.password);
+                connectionInfo.Timeout = TimeSpan.FromSeconds(30);
+                client = new SshClient(connectionInfo);
+                //client.ErrorOccurred += Client_ErrorOccurred;
+                client.Connect();
+                if (!client.IsConnected)
+                {
+                    throw new Exception("SSH connect failed");
+                }
+                var portFwdL = new ForwardedPortLocal(connInfo.localIp, (uint)connInfo.localPort, connInfo.esIp, (uint)connInfo.esPort); //映射到本地端口
+                client.AddForwardedPort(portFwdL);
+                portFwdL.Start();
+
+                if (!client.IsConnected)
+                {
+                    throw new Exception("Port forwarding failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return client;
+        }
+
+        /// <summary>
         /// 不使用SSH连接测试
         /// </summary>
         /// <param name="connInfo"></param>
@@ -172,14 +213,10 @@ namespace esHelper.Common
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    //if (string.IsNullOrEmpty(data) == false)
-                    //{
-                    //    client.DefaultRequestHeaders.Add("data", data);
-                    //}
                     ByteArrayContent bac = new ByteArrayContent(new byte[] { });
                     if (string.IsNullOrEmpty(data) == false)
                     {
-                        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
+                        byte[] bytes = Encoding.UTF8.GetBytes(data);
                         bac = new ByteArrayContent(bytes);
                     }
                     HttpResponseMessage res = await client.PostAsync(url, bac);//得到返回字符流
@@ -196,21 +233,15 @@ namespace esHelper.Common
         {
             try
             {
-                //HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Put, "/a");
-                //httpRequest.Content = new StringContent(data, Encoding.UTF8, "application/json");
-
-                //using (HttpClientHandler handler = new HttpClientHandler() { Credentials = new NetworkCredential("elastic", "myelastic") })
-                //{
-
                 using (HttpClient client = new HttpClient())  //handler
                 {
                     //client.BaseAddress = new Uri("http://localhost:9201/");
-                    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
 
                     ByteArrayContent bac = new ByteArrayContent(new byte[] { });
+                    bac.Headers.Add("Content-Type", "application/json");
                     if (string.IsNullOrEmpty(data) == false)
                     {
-                        bac.Headers.Add("Content-Type", "application/json");
                         byte[] bytes = Encoding.UTF8.GetBytes(data);
                         bac = new ByteArrayContent(bytes);
                     }
@@ -226,15 +257,29 @@ namespace esHelper.Common
                 return null;
             }
         }
-
-        public static String PostURL(String url)
+        public static async Task<String> DeleteURL(String url)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                HttpResponseMessage response = client.PostAsync(url, null).Result;//得到返回字符流
-                return response.Content.ReadAsStringAsync().Result;
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage res = await client.DeleteAsync(url);//得到返回字符流
+                    return await res.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
+        //public static String PostURL(String url)
+        //{
+        //    using (HttpClient client = new HttpClient())
+        //    {
+        //        HttpResponseMessage response = client.PostAsync(url, null).Result;//得到返回字符流
+        //        return response.Content.ReadAsStringAsync().Result;
+        //    }
+        //}
 
 
         /// <summary>
@@ -344,6 +389,129 @@ namespace esHelper.Common
             catch
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// 获取索引Mapping
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static async Task<JObject> GetIndexMapping(String url, String indexName)
+        {
+            try
+            {
+                string result = await GetURL(url + "/" + indexName);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return null;
+                }
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null)
+                {
+                    if (jObj.Root[indexName] != null && jObj.Root[indexName]["mappings"] != null)
+                    {
+                        return jObj;
+                    }
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 开启已经关闭的索引
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static async Task<bool> OpenIndex(String url, String indexName)
+        {
+            try
+            {
+                string result = await PostURL(url + "/" + indexName + "/_open");
+                if (string.IsNullOrEmpty(result))
+                {
+                    return false;
+                }
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null)
+                {
+                    if (jObj.Root["acknowledged"] != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 关闭索引(不存在内存中，仍然在磁盘中)
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static async Task<bool> CloseIndex(String url, String indexName)
+        {
+            try
+            {
+                string result = await PostURL(url + "/" + indexName + "/_close");
+                if (string.IsNullOrEmpty(result))
+                {
+                    return false;
+                }
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null)
+                {
+                    if (jObj.Root["acknowledged"] != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 删除索引
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteIndex(String url, String indexName)
+        {
+            try
+            {
+                string result = await DeleteURL(url + "/" + indexName);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return false;
+                }
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null)
+                {
+                    if (jObj.Root["acknowledged"] != null)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

@@ -82,7 +82,7 @@ namespace esHelper
             {
                 if (connInfo.isUseSSH)
                 {
-                    SshClient sshClient = Port.GetSshClient(connInfo);  //连接测试
+                    SshClient sshClient = EsFile.GetSshClient(connInfo);  //连接测试
                     sshClient.Disconnect();
                     sshClient.Dispose();
                 }

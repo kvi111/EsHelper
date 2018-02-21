@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TreeViewControl;
 using Windows.Foundation;
 using Windows.UI;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -131,7 +132,7 @@ namespace esHelper
                     {
                         Border border = new Border();
                         border.Background = new SolidColorBrush(Colors.AliceBlue);
-                        
+
                         TextBlock tb = new TextBlock();
                         tb.Text = jpro.Name;
                         tb.IsTextSelectionEnabled = true;
@@ -162,6 +163,44 @@ namespace esHelper
                 }
             }
         }
+
+        private async void HyperlinkButtonMapping_Click(object sender, RoutedEventArgs e)
+        {
+            HyperlinkButton btn = sender as HyperlinkButton;
+            JObject jObject = await EsFile.GetIndexMapping(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+            ContentDialog_Mapping mappingDig = new ContentDialog_Mapping(jObject.ToString());
+            mappingDig.ShowAsync();
+        }
+
+        private async void HyperlinkButtonOpenClose_Click(object sender, RoutedEventArgs e)
+        {
+            HyperlinkButton btn = sender as HyperlinkButton;
+            if (btn.Content.ToString() == "open")
+            {
+                bool result = await EsFile.OpenIndex(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+                if (result == false)
+                {
+                    (new MessageDialog("open fail")).ShowAsync();
+                }
+                else
+                {
+                    ToggleSwitch_Toggled(sender, e); //重新加载索引列表
+                }
+            }
+            if (btn.Content.ToString() == "close")
+            {
+                bool result = await EsFile.CloseIndex(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+                if (result == false)
+                {
+                    (new MessageDialog("close fail")).ShowAsync();
+                }
+                else
+                {
+                    ToggleSwitch_Toggled(sender, e); //重新加载索引列表
+                }
+            }
+        }
+
         private async void AppBarButtonAdd_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog_NewIndex cdni = new ContentDialog_NewIndex();

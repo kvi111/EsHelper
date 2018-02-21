@@ -181,7 +181,7 @@ namespace esHelper
                     {
                         if (esSD.SSHClient == null || esSD.SSHClient.IsConnected == false)
                         {
-                            esSD.SSHClient = Port.GetSshClient(esSD.EsConnInfo);
+                            esSD.SSHClient = EsFile.GetSshClient(esSD.EsConnInfo);
 
                         }
                     }

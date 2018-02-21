@@ -5,14 +5,18 @@
     xmlns:local="using:esHelper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cvt="using:esHelper.Common"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <cvt:OpenCloseConverter x:Key="urlCvt"/>
+    </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot Grid.Row="1" Name="pivot1">
             <PivotItem Header="Index" Name="pivotItemIndex">
                 <Grid Height="AUTO" Width="AUTO">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="60"></RowDefinition>
                         <RowDefinition Height="60"></RowDefinition>
                         <RowDefinition Height="60"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
@@ -37,38 +41,44 @@
                             </ToggleSwitch.OnContent>
                         </ToggleSwitch>
                     </StackPanel>
-                    <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" Background="AliceBlue" Height="50" VerticalAlignment="Center">
-                        <TextBlock Width="300" Text="Id"  VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBlock Width="300" Text="Name" VerticalAlignment="Center" TextAlignment="Center" />
-                        <TextBlock Width="150" Text="IsOpen" VerticalAlignment="Center"/>
-                        <TextBlock Width="150" Text="Color" VerticalAlignment="Center"/>
-                        <TextBlock Width="150" Text="Document Count" VerticalAlignment="Center" TextAlignment="Right"/>
-                        <TextBlock Width="150" Text="Shards Count" VerticalAlignment="Center" TextAlignment="Right"/>
-                        <TextBlock Width="150" Text="Data Space" VerticalAlignment="Center" TextAlignment="Right"/>
-                        <TextBlock Width="200" Text="Action" VerticalAlignment="Center" TextAlignment="Center"/>
-                    </StackPanel>
-                    <ListView Name="listview1" SelectionMode="None" Grid.Column="0" Grid.Row="3" >
-                        <!--<ListView.HeaderTemplate>
+                    <ScrollViewer Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel  Orientation="Horizontal" Background="AliceBlue" Height="50" VerticalAlignment="Center">
+                                <TextBlock Width="300" Text="Id"  VerticalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Width="300" Text="Name" VerticalAlignment="Center" TextAlignment="Center" />
+                                <TextBlock Width="150" Text="IsOpen" VerticalAlignment="Center"/>
+                                <TextBlock Width="150" Text="Color" VerticalAlignment="Center"/>
+                                <TextBlock Width="150" Text="Document Count" VerticalAlignment="Center" TextAlignment="Right"/>
+                                <TextBlock Width="150" Text="Shards Count" VerticalAlignment="Center" TextAlignment="Right"/>
+                                <TextBlock Width="150" Text="Data Space" VerticalAlignment="Center" TextAlignment="Right"/>
+                                <TextBlock Width="200" Text="Action" VerticalAlignment="Center" TextAlignment="Center"/>
+                            </StackPanel>
+                            <ListView Name="listview1" SelectionMode="None">
+                                <!--<ListView.HeaderTemplate>
                             <DataTemplate>
 
                             </DataTemplate>
                         </ListView.HeaderTemplate>-->
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
-                                    <!--<TextBlock Width="300" Text="{Binding Id}"/>-->
-                                    <TextBlock Width="300" Text="{Binding Id}" VerticalAlignment="Center" IsTextSelectionEnabled="True"/>
-                                    <TextBlock Width="300" Text="{Binding Name}" VerticalAlignment="Center"/>
-                                    <TextBlock Width="150" Text="{Binding isOpen}" VerticalAlignment="Center"/>
-                                    <TextBlock Width="150" Text="{Binding Color}" VerticalAlignment="Center"/>
-                                    <TextBlock Width="150" Text="{Binding DocumentCount}" VerticalAlignment="Center" TextAlignment="Right"/>
-                                    <TextBlock Width="150" Text="{Binding ShardsCount}" VerticalAlignment="Center" TextAlignment="Right"/>
-                                    <TextBlock Width="150" Text="{Binding DataSpace}" VerticalAlignment="Center" TextAlignment="Right"/>
-                                    <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" Command="{Binding Id}" CommandParameter="{Binding Name}">browse</HyperlinkButton>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
+                                            <!--<TextBlock Width="300" Text="{Binding Id}"/>-->
+                                            <TextBlock Width="300" Text="{Binding Id}" VerticalAlignment="Center" IsTextSelectionEnabled="True"/>
+                                            <TextBlock Width="300" Text="{Binding Name}" VerticalAlignment="Center"/>
+                                            <TextBlock Width="150" Text="{Binding isOpen}" VerticalAlignment="Center"/>
+                                            <TextBlock Width="150" Text="{Binding Color}" VerticalAlignment="Center"/>
+                                            <TextBlock Width="150" Text="{Binding DocumentCount}" VerticalAlignment="Center" TextAlignment="Right"/>
+                                            <TextBlock Width="150" Text="{Binding ShardsCount}" VerticalAlignment="Center" TextAlignment="Right"/>
+                                            <TextBlock Width="150" Text="{Binding DataSpace}" VerticalAlignment="Center" TextAlignment="Right"/>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="10,0,5,0">browse</HyperlinkButton>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonMapping_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0">mapping</HyperlinkButton>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonOpenClose_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="{Binding isOpen,Converter={StaticResource urlCvt}}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
             </PivotItem>
             <PivotItem Header="Search" Name="pivotItemSearch">
@@ -108,7 +118,7 @@
                             </ToolTipService.ToolTip>
                         </AppBarButton>
                     </StackPanel>
-                    <ScrollViewer Name="scrollView" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Height="AUTO">
+                    <ScrollViewer Name="scrollView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                         <Grid Name="gridData">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="AUTO"></RowDefinition>
