@@ -229,17 +229,17 @@ namespace esHelper.Common
             }
         }
 
-        public static async Task<String> PutURL(String url, String data = "")
+        public static async Task<String> PutURL0(String url, String data = "")
         {
             try
             {
                 using (HttpClient client = new HttpClient())  //handler
                 {
-                    //client.BaseAddress = new Uri("http://localhost:9201/");
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
 
                     ByteArrayContent bac = new ByteArrayContent(new byte[] { });
                     bac.Headers.Add("Content-Type", "application/json");
+                    bac.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/json");
                     if (string.IsNullOrEmpty(data) == false)
                     {
                         byte[] bytes = Encoding.UTF8.GetBytes(data);
@@ -251,6 +251,52 @@ namespace esHelper.Common
                 }
 
                 //}
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static async Task<String> PutURL(String url, String data = "")
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+                    StringContent stringContent = new StringContent(data, Encoding.UTF8, "application/json");
+                    HttpResponseMessage res = await client.PutAsync(url, stringContent);//得到返回字符流
+                    return await res.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static async Task<String> PutURL_CreateIndex1(String url, String data = "")
+        {
+            try
+            {
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+
+                request.Method = "PUT";
+                request.Accept = "*/*";
+                request.ContentType = "application/json";
+                //request.Headers["Host"] = "localhost:9200";
+                //request.Headers["Accept-Language"] = "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2";
+                //request.Headers["Accept-Encoding"] = "gzip,deflate";
+                //request.Headers["User-Agent"] = "Mozilla /5.0 (Windows NT 10.0; WOW64; rv:58.0) Gecko/20100101 Firefox/58.0";
+
+                byte[] buffer = Encoding.UTF8.GetBytes(data);
+                Stream reqstr = await request.GetRequestStreamAsync();
+                reqstr.Write(buffer, 0, buffer.Length);
+
+                WebResponse response = await request.GetResponseAsync();
+                StreamReader readStream = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+                return readStream.ReadToEnd();
             }
             catch (Exception ex)
             {
