@@ -213,13 +213,14 @@ namespace esHelper.Common
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    ByteArrayContent bac = new ByteArrayContent(new byte[] { });
-                    if (string.IsNullOrEmpty(data) == false)
-                    {
-                        byte[] bytes = Encoding.UTF8.GetBytes(data);
-                        bac = new ByteArrayContent(bytes);
-                    }
-                    HttpResponseMessage res = await client.PostAsync(url, bac);//得到返回字符流
+                    //ByteArrayContent bac = new ByteArrayContent(new byte[] { });
+                    //if (string.IsNullOrEmpty(data) == false)
+                    //{
+                    //    byte[] bytes = Encoding.UTF8.GetBytes(data);
+                    //    bac = new ByteArrayContent(bytes);
+                    //}
+                    StringContent stringContent = new StringContent(data, Encoding.UTF8, "application/json");
+                    HttpResponseMessage res = await client.PostAsync(url, stringContent);//得到返回字符流
                     return await res.Content.ReadAsStringAsync();
                 }
             }
@@ -409,15 +410,16 @@ namespace esHelper.Common
         /// <param name="url"></param>
         /// <param name="indexName">索引名称</param>
         /// <param name="json"></param>
-        /// <param name="startIndex">开始位置</param>
+        /// <param name="pageIndex">开始位置</param>
         /// <param name="pageCount">每页数量</param>
         /// <returns></returns>
-        public static async Task<JObject> GetIndexData(String url, String indexName, int startIndex = 0, int pageSize = 20)
+        public static async Task<PerPageData> GetIndexData(String url, String indexName, int pageIndex = 0, int pageSize = 20)
         {
+            PerPageData pData;
             try
             {
-                String json = "{\"query\": {\"match_all\": { }},\"from\": " + startIndex.ToString() + ", \"size\": " + pageSize.ToString() + "}";
-                string result = await GetURL(url + "/" + indexName + "/_search", json);
+                String json = "{\"query\": {\"match_all\": { }},\"from\": " + (pageIndex * pageSize).ToString() + ", \"size\": " + pageSize.ToString() + "}";
+                string result = await PostURL(url + "/" + indexName + "/_search", json);
                 if (string.IsNullOrEmpty(result))
                 {
                     return null;
@@ -425,9 +427,12 @@ namespace esHelper.Common
                 JObject jObj = JObject.Parse(result);
                 if (jObj != null)
                 {
-                    if (jObj.Root["hits"] != null)
+                    if (jObj.Root["hits"] != null && jObj.Root["hits"]["total"] != null)
                     {
-                        return jObj;
+                        int total = int.Parse(jObj.Root["hits"]["total"].ToString());
+                        pData = new PerPageData(pageIndex, total, pageSize);
+                        pData.pageData = jObj;
+                        return pData;
                     }
                 }
                 return null;

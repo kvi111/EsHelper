@@ -106,7 +106,7 @@
     <Compile Include="Common\GlyphConverter.cs" />
     <Compile Include="Common\EsConnectionInfo.cs" />
     <Compile Include="Common\OpenCloseConverter.cs" />
-    <Compile Include="Common\RestClient.cs" />
+    <Compile Include="Common\PerPageData.cs" />
     <Compile Include="ContentDialog1.xaml.cs">
       <DependentUpon>ContentDialog1.xaml</DependentUpon>
     </Compile>

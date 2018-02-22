@@ -23,6 +23,7 @@ namespace esHelper
     {
         public EsSystemData esdata;
         public StackPanel lastCheckSP;
+        public FuncResult result;
         public ContentDialog_NewIndex()
         {
             this.InitializeComponent();
@@ -45,9 +46,7 @@ namespace esHelper
         }
         private bool checkAllField(ref string json)
         {
-            json = "{\"mappings\": { " +
-                "\"" + TypeName.Text + "\":{" +
-                "\"properties\": {";
+            json = "{\"mappings\": { \"" + TypeName.Text + "\":{ \"properties\": {";
 
             foreach (StackPanel sp in spContent.Children)
             {
@@ -64,7 +63,7 @@ namespace esHelper
                     {
                         ComboBox comb2 = sp.Children[2] as ComboBox;
                         ComboBoxItem cbitem2 = comb2.SelectedItem as ComboBoxItem;
-                        json += "\"" + tb.Text.Trim() + "\":{ \"type\":\"" + cbitem2.Content.ToString() + "\",";
+                        json += "\"" + tb.Text.Trim() + "\":{ \"type\":\"" + cbitem2.Content.ToString() + "\"";
 
                         ComboBox comb3 = sp.Children[3] as ComboBox;
                         if (comb3.SelectedItem != null)
@@ -72,15 +71,17 @@ namespace esHelper
                             ComboBoxItem cbitem3 = comb3.SelectedItem as ComboBoxItem;
                             if (cbitem3.Content != null && string.IsNullOrEmpty(cbitem3.Content.ToString()) == false) //选择了Analyzer
                             {
-                                json += "\"analyzer\": \"" + cbitem3.Content.ToString() + "\"},";
+                                json += ",\"analyzer\": \"" + cbitem3.Content.ToString() + "\"";
                             }
                         }
 
                         CheckBox chkb3 = sp.Children[4] as CheckBox;
                         if (chkb3.IsChecked == false)
                         {
-                            json += "\"index\": false},";
+                            json += ",\"index\": false";
                         }
+
+                        json += "},";
                     }
                 }
             }
@@ -114,9 +115,8 @@ namespace esHelper
             cbox.BorderThickness = new Thickness(0.1);
             foreach (ComboBoxItem item in comboxDataType.Items)
             {
-                cbox.Items.Add(new ComboBoxItem() { Content = item.Content == null ? "" : item.Content });
+                cbox.Items.Add(new ComboBoxItem() { Content = item.Content == null ? "" : item.Content, IsSelected = item.Content.ToString() == "text" ? true : false });
             }
-            cbox.SelectedValue = "text";
             sp.Children.Add(cbox);
 
             ComboBox cbox1 = new ComboBox();
@@ -217,17 +217,17 @@ namespace esHelper
                 args.Cancel = true;
                 return;
             }
-            this.Dispatcher.RunAsync( Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-            {
-                FuncResult result = await EsFile.CreateIndex(esdata.EsConnInfo.GetLastUrl(), IndexName.Text.Trim(), json);
-                if (result.Success ==false)
-                {
-                    args.Cancel = true;
-                    (new MessageDialog(result.Message)).ShowAsync();
-                    return;
-                }
-            });
-            
+            this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+           {
+               result = await EsFile.CreateIndex(esdata.EsConnInfo.GetLastUrl(), IndexName.Text.Trim(), json);
+               if (result.Success == false)
+               {
+                   args.Cancel = true;
+                   (new MessageDialog(result.Message)).ShowAsync();
+                   return;
+               }
+           });
+
         }
 
         private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

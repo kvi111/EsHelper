@@ -17,7 +17,7 @@
     <StackPanel Orientation="Vertical" Width="500">
         <StackPanel Orientation="Horizontal">
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Index Name：" Width="150"/>
-            <TextBox HorizontalAlignment="Left" VerticalAlignment="Center" Name="IndexName" Width="300" PlaceholderText=""/>
+            <TextBox HorizontalAlignment="Left" InputScope="Number" VerticalAlignment="Center" Name="IndexName" Width="300" PlaceholderText=""/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">

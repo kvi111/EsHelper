@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using TreeViewControl;
 using Windows.Foundation;
 using Windows.UI;
@@ -22,10 +24,14 @@ namespace esHelper
     {
         SortedSet<string> indexNameSet = new SortedSet<string>();
         EsSystemData esdata;
+        int pageIndex = 0;
+        int totalPageCount = 0;
+        string indexName = "";
         public Index()
         {
             this.InitializeComponent();
         }
+
         #region index
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -84,82 +90,91 @@ namespace esHelper
             InitData(ToggleSwitch1.IsOn);
         }
 
-        int i = 0;
+        int rowIndex = 0;
         private async void HyperlinkButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
+            pageIndex = 0;
+            totalPageCount = 0;
             HyperlinkButton btn = sender as HyperlinkButton;
-            JObject jObject = await EsFile.GetIndexData(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString(), 0, 50);
+            indexName = btn.CommandParameter.ToString();
+            await GetBrowsePageData(indexName, pageIndex);
+        }
+
+        private async Task GetBrowsePageData(string indexName, int pIndex)
+        {
+            PerPageData perPageData = await EsFile.GetIndexData(esdata.EsConnInfo.GetLastUrl(), indexName, pIndex);
+            pageIndex = perPageData.pageIndex;
+            totalPageCount = perPageData.totalPageCount;
+            textBlockPageIndex.Text = (perPageData.pageIndex + 1).ToString();
+            textBlockTotalPageCount.Text = perPageData.totalPageCount.ToString();
             pivot1.SelectedIndex = 1;
-            if (jObject != null && jObject.Root["hits"]["hits"] != null)
+            if (perPageData != null)
             {
+                JObject jObject = perPageData.pageData as JObject;
                 JArray arrData = jObject.Root["hits"]["hits"] as JArray;
                 if (arrData.Count > 0)
                 {
-                    i = 0;
+                    rowIndex = 0;
 
-                    //gridData.Background = new SolidColorBrush(Colors.Transparent);
-                    //gridData.BorderBrush = new SolidColorBrush(Colors.Red);
-                    //gridData.BorderThickness = new Thickness(1);
-                    gridData.ColumnSpacing = 10;
+                    gridData.ColumnSpacing = 2;
                     gridData.RowSpacing = 5;
                     gridData.Children.Clear();
                     gridData.RowDefinitions.Clear();
                     gridData.ColumnDefinitions.Clear();
 
-                    gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行
+                    gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行, 存放标题栏
                     foreach (JObject jObj in arrData) //行
                     {
                         gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行
-                        GetAllProperty(jObj, true, 0);
-                        i++;
+                        GetAllProperty(jObj, 0);
+                        rowIndex++;
                     }
                     gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30) }); //添加一行
-                    gridData.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                    //scrollView. = gridData.ActualWidth;
-                    //scrollView.UpdateLayout();
-                    //RowDefinition rd = gridData.RowDefinitions[0];
-                    //rd.SetValue(BackgroundProperty, new SolidColorBrush(Colors.AliceBlue));
                 }
             }
         }
-        private void GetAllProperty(JObject jObject, bool isRoot, int j)
+
+        private void GetAllProperty(JObject jObject, int columnIndex)
         {
             foreach (JProperty jpro in jObject.Properties())
             {
                 if (jpro.Value is JValue)
                 {
-                    if (i == 0)
+                    if (rowIndex == 0) //存标题
                     {
+                        gridData.ColumnDefinitions.Add(new ColumnDefinition() { MinWidth = 100, MaxWidth = 300 }); //添加一列
+
                         Border border = new Border();
+                        //border.BorderThickness = 1;
                         border.Background = new SolidColorBrush(Colors.AliceBlue);
 
                         TextBlock tb = new TextBlock();
                         tb.Text = jpro.Name;
                         tb.IsTextSelectionEnabled = true;
                         tb.FontSize = tb.FontSize + 2;
+                        tb.HorizontalAlignment = HorizontalAlignment.Center;
+                        tb.VerticalAlignment = VerticalAlignment.Center;
 
                         border.Child = tb;
 
                         gridData.Children.Add(border);
-                        Grid.SetColumn(border, j);
-                        Grid.SetRow(border, i);
+                        Grid.SetColumn(border, columnIndex);
+                        Grid.SetRow(border, rowIndex);
                     }
 
                     TextBlock tb1 = new TextBlock();
                     tb1.Text = jpro.Value.ToString();
                     tb1.IsTextSelectionEnabled = true;
 
-
                     gridData.Children.Add(tb1);
-                    Grid.SetColumn(tb1, j);
-                    Grid.SetRow(tb1, i + 1);
+                    Grid.SetColumn(tb1, columnIndex);
+                    Grid.SetRow(tb1, rowIndex + 1);
 
-                    gridData.ColumnDefinitions.Add(new ColumnDefinition() { MinWidth = 100, MaxWidth = 300 }); //添加一列
-                    j++;
+                    columnIndex++;
                 }
                 else if (jpro.Value is JObject)
                 {
-                    GetAllProperty((JObject)jpro.Value, false, j);
+                    GetAllProperty((JObject)jpro.Value, columnIndex);
                 }
             }
         }
@@ -200,30 +215,100 @@ namespace esHelper
                 }
             }
         }
+        private async void HyperlinkButtonDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new MessageDialog("are you sure delete this index?");
 
+            dialog.Commands.Add(new UICommand("ok", cmd => { }, commandId: 0));
+            dialog.Commands.Add(new UICommand("cancel", cmd => { }, commandId: 1));
+
+            //设置默认按钮，不设置的话默认的确认按钮是第一个按钮
+            dialog.DefaultCommandIndex = 0;
+            dialog.CancelCommandIndex = 1;
+
+            //获取返回值
+            var result = await dialog.ShowAsync();
+            if (result.Label == "ok")
+            {
+                HyperlinkButton btn = sender as HyperlinkButton;
+                bool resultBool = await EsFile.DeleteIndex(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+                if (resultBool == false)
+                {
+                    (new MessageDialog("delete fail")).ShowAsync();
+                }
+                else
+                {
+                    ToggleSwitch_Toggled(sender, e); //重新加载索引列表
+                }
+            }
+        }
         private async void AppBarButtonAdd_Click(object sender, RoutedEventArgs e)
         {
             ContentDialog_NewIndex cdni = new ContentDialog_NewIndex();
             cdni.esdata = esdata;
             await cdni.ShowAsync();
+            if (cdni.result!=null && cdni.result.Success)
+            {
+                ToggleSwitch_Toggled(sender, e); //重新加载索引列表
+            }
         }
         #endregion
 
         #region browse
-        private void AppBarButtonFirst_Click(object sender, RoutedEventArgs e)
+        private async void AppBarButtonFirst_Click(object sender, RoutedEventArgs e)
         {
-
+            if (pageIndex != 0)
+            {
+                pageIndex = 0;
+                await GetBrowsePageData(indexName, pageIndex);
+            }
         }
-        private void AppBarButtonPrevious_Click(object sender, RoutedEventArgs e)
+        private async void AppBarButtonPrevious_Click(object sender, RoutedEventArgs e)
         {
-
+            if (pageIndex > 0)
+            {
+                pageIndex--;
+                await GetBrowsePageData(indexName, pageIndex);
+            }
         }
-        private void AppBarButtonNext_Click(object sender, RoutedEventArgs e)
+        private async void AppBarButtonNext_Click(object sender, RoutedEventArgs e)
         {
-
+            if ((pageIndex + 1) <= (totalPageCount - 1))
+            {
+                pageIndex++;
+                await GetBrowsePageData(indexName, pageIndex);
+            }
         }
-        private void AppBarButtonLast_Click(object sender, RoutedEventArgs e)
+        private async void AppBarButtonLast_Click(object sender, RoutedEventArgs e)
         {
+            if ((totalPageCount - 1) >= 0 && pageIndex != (totalPageCount - 1))
+            {
+                await GetBrowsePageData(indexName, totalPageCount - 1);
+            }
+        }
+        
+
+        private async void ButtonGO_Click(object sender, RoutedEventArgs e)
+        {
+            int goPageIndex = 1;
+            if (int.TryParse(textBoxPageIndex.Text, out goPageIndex))
+            {
+                if (goPageIndex > 0 && goPageIndex < totalPageCount)
+                {
+                    await GetBrowsePageData(indexName, goPageIndex - 1);
+                }
+            }
+        }
+
+        private void Textbox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textbox = (TextBox)sender;
+            if (!Regex.IsMatch(textbox.Text, "^\\d*\\.?\\d*$") && textbox.Text != "")
+            {
+                int pos = textbox.SelectionStart - 1;
+                textbox.Text = textbox.Text.Remove(pos, 1);
+                textbox.SelectionStart = pos;
+            }
 
         }
         #endregion
