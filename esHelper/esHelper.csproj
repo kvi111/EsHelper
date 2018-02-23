@@ -17,7 +17,11 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>esHelper_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>esHelper_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>ECD314504202A9DD7A2FED490686E8C02666D25D</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -98,15 +102,17 @@
     <Compile Include="BlankPage1.xaml.cs">
       <DependentUpon>BlankPage1.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Common\EsFile.cs" />
-    <Compile Include="Common\EsIndex.cs" />
-    <Compile Include="Common\EsSystemData.cs" />
-    <Compile Include="Common\FuncResult.cs" />
-    <Compile Include="Common\GlyphConverter.cs" />
-    <Compile Include="Common\EsConnectionInfo.cs" />
-    <Compile Include="Common\OpenCloseConverter.cs" />
-    <Compile Include="Common\PerPageData.cs" />
+    <Compile Include="Convert\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\EsService.cs" />
+    <Compile Include="Model\EsIndex.cs" />
+    <Compile Include="Model\EsSystemData.cs" />
+    <Compile Include="Model\FuncResult.cs" />
+    <Compile Include="Convert\GlyphConverter.cs" />
+    <Compile Include="Model\EsConnectionInfo.cs" />
+    <Compile Include="Common\HttpUtil.cs" />
+    <Compile Include="Convert\ItemIndexConverter.cs" />
+    <Compile Include="Convert\OpenCloseConverter.cs" />
+    <Compile Include="Model\PerPageData.cs" />
     <Compile Include="ContentDialog1.xaml.cs">
       <DependentUpon>ContentDialog1.xaml</DependentUpon>
     </Compile>
@@ -122,16 +128,16 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\Port.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="esHelper_TemporaryKey.pfx" />
+    <None Include="esHelper_StoreKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

@@ -41,15 +41,15 @@ namespace esHelper
             TreeNode node = args.ClickedItem as TreeNode;
             esdata = node.ParentNode.Data as EsSystemData;
 
-            InitData(false);
+            await InitData(false);
         }
 
-        private async void InitData(bool isShowSysIndex)
+        private async Task InitData(bool isShowSysIndex)
         {
             listview1.ItemsSource = null;
 
             List<EsIndex> listIndex = new List<EsIndex>();
-            string[] indexs = await EsFile.GetIndexList(esdata.EsConnInfo.GetLastUrl());
+            string[] indexs = await EsService.GetIndexList(esdata.EsConnInfo);
             foreach (string str in indexs)
             {
                 if (str == "") continue;
@@ -85,9 +85,9 @@ namespace esHelper
             listview1.ItemsSource = listIndex;
         }
 
-        private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            InitData(ToggleSwitch1.IsOn);
+            await InitData(ToggleSwitch1.IsOn);
         }
 
         int rowIndex = 0;
@@ -102,7 +102,7 @@ namespace esHelper
 
         private async Task GetBrowsePageData(string indexName, int pIndex)
         {
-            PerPageData perPageData = await EsFile.GetIndexData(esdata.EsConnInfo.GetLastUrl(), indexName, pIndex);
+            PerPageData perPageData = await EsService.GetIndexData(esdata.EsConnInfo, indexName, pIndex);
             pageIndex = perPageData.pageIndex;
             totalPageCount = perPageData.totalPageCount;
             textBlockPageIndex.Text = (perPageData.pageIndex + 1).ToString();
@@ -182,7 +182,7 @@ namespace esHelper
         private async void HyperlinkButtonMapping_Click(object sender, RoutedEventArgs e)
         {
             HyperlinkButton btn = sender as HyperlinkButton;
-            JObject jObject = await EsFile.GetIndexMapping(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+            JObject jObject = await EsService.GetIndexMapping(esdata.EsConnInfo, btn.CommandParameter.ToString());
             ContentDialog_Mapping mappingDig = new ContentDialog_Mapping(jObject.ToString());
             mappingDig.ShowAsync();
         }
@@ -192,7 +192,7 @@ namespace esHelper
             HyperlinkButton btn = sender as HyperlinkButton;
             if (btn.Content.ToString() == "open")
             {
-                bool result = await EsFile.OpenIndex(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+                bool result = await EsService.OpenIndex(esdata.EsConnInfo, btn.CommandParameter.ToString());
                 if (result == false)
                 {
                     (new MessageDialog("open fail")).ShowAsync();
@@ -204,7 +204,7 @@ namespace esHelper
             }
             if (btn.Content.ToString() == "close")
             {
-                bool result = await EsFile.CloseIndex(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+                bool result = await EsService.CloseIndex(esdata.EsConnInfo, btn.CommandParameter.ToString());
                 if (result == false)
                 {
                     (new MessageDialog("close fail")).ShowAsync();
@@ -231,7 +231,7 @@ namespace esHelper
             if (result.Label == "ok")
             {
                 HyperlinkButton btn = sender as HyperlinkButton;
-                bool resultBool = await EsFile.DeleteIndex(esdata.EsConnInfo.GetLastUrl(), btn.CommandParameter.ToString());
+                bool resultBool = await EsService.DeleteIndex(esdata.EsConnInfo, btn.CommandParameter.ToString());
                 if (resultBool == false)
                 {
                     (new MessageDialog("delete fail")).ShowAsync();

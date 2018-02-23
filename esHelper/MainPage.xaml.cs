@@ -155,7 +155,7 @@ namespace esHelper
         {
             sampleTreeView.RootNode.Clear();
 
-            listConnectionInfo = EsFile.GetEsFiles();
+            listConnectionInfo = EsService.GetEsFiles();
             foreach (EsConnectionInfo connInfo in listConnectionInfo)
             {
                 TreeNode workFolder = new TreeNode() { Data = new EsSystemData(connInfo.connectionName, EsTreeItemType.esConnection) { EsConnInfo = connInfo } };
@@ -181,11 +181,12 @@ namespace esHelper
                     {
                         if (esSD.SSHClient == null || esSD.SSHClient.IsConnected == false)
                         {
-                            esSD.SSHClient = EsFile.GetSshClient(esSD.EsConnInfo);
+                            esSD.SSHClient = EsService.GetSshClient(esSD.EsConnInfo);
 
                         }
                     }
-                    else if (await EsFile.ConnectionTest(esSD.EsConnInfo) == false)
+
+                    if (await EsService.ConnectionTest(esSD.EsConnInfo) == false)   //最终检查是否能获取到Es 版本信息 为判断依据
                     {
                         (new MessageDialog("连接失败！")).ShowAsync();
                         return;
@@ -263,7 +264,7 @@ namespace esHelper
 
                     Menu_Close_Click(sender, e); //先关闭，再删除
 
-                    EsFile.DelEsFile(esSD.EsConnInfo);
+                    EsService.DelEsFile(esSD.EsConnInfo);
                     lastTreeNode.ParentNode.Remove(lastTreeNode);
                 }
             }

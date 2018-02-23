@@ -10,6 +10,7 @@
 
     <Page.Resources>
         <cvt:OpenCloseConverter x:Key="urlCvt"/>
+        <cvt:ItemIndexConverter x:Key="idxcvt"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -70,14 +71,9 @@
                                 <TextBlock Width="200" Text="Action" VerticalAlignment="Center" TextAlignment="Center"/>
                             </StackPanel>
                             <ListView Name="listview1" SelectionMode="None">
-                                <!--<ListView.HeaderTemplate>
-                            <DataTemplate>
-
-                            </DataTemplate>
-                        </ListView.HeaderTemplate>-->
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center" IsDoubleTapEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},Path=ListViewItem,Converter={StaticResource idxcvt}}">
                                             <TextBlock Width="300" Text="{Binding Id}" VerticalAlignment="Center" IsTextSelectionEnabled="True"/>
                                             <TextBlock Width="300" Text="{Binding Name}" VerticalAlignment="Center"/>
                                             <TextBlock Width="150" Text="{Binding isOpen}" VerticalAlignment="Center"/>
@@ -100,14 +96,14 @@
             <PivotItem Header="Browse" Name="pivotItemBrowse">
                 <StackPanel Orientation="Vertical" Height="AUTO">
                     <ScrollViewer Name="scrollView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <Grid Name="gridData" BorderBrush="AliceBlue" BorderThickness="1">
-                        <!--<Grid.RowDefinitions>
+                        <Grid Name="gridData" BorderBrush="AliceBlue" BorderThickness="1">
+                            <!--<Grid.RowDefinitions>
                             <RowDefinition Height="AUTO"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="AUTO"></ColumnDefinition>
                         </Grid.ColumnDefinitions>-->
-                    </Grid>
+                        </Grid>
                     </ScrollViewer>
                     <StackPanel Orientation="Horizontal" Height="35">
                         <AppBarButton Height="35" Width="35" Name="AppBarButtonFirst" Click="AppBarButtonFirst_Click">
@@ -153,7 +149,7 @@
                 </StackPanel>
             </PivotItem>
             <PivotItem Header="Search" Name="pivotItemSearch">
-                
+
             </PivotItem>
         </Pivot>
     </Grid>

@@ -19,19 +19,19 @@ namespace esHelper
             this.InitializeComponent();
         }
 
-        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             connInfo = new EsConnectionInfo();
             connInfo.connectionName = connetionName.Text.Trim() == "" ? esIp.Text.Trim() + "_" + esPort.Text.Trim() : connetionName.Text.Trim();
 
-            if (EsFile.checkFileName(connInfo.connectionName) == false)
+            if (EsService.checkFileName(connInfo.connectionName) == false)
             {
                 (new MessageDialog("连接名称无效！")).ShowAsync();
                 args.Cancel = true;
                 return;
             }
 
-            if (EsFile.checkFileExists(connInfo.connectionName))
+            if (EsService.checkFileExists(connInfo.connectionName))
             {
                 (new MessageDialog("连接名称重复！")).ShowAsync();
                 args.Cancel = true;
@@ -80,23 +80,25 @@ namespace esHelper
             }
             try
             {
+                SshClient sshClient = null;
                 if (connInfo.isUseSSH)
                 {
-                    SshClient sshClient = EsFile.GetSshClient(connInfo);  //连接测试
+                    sshClient = EsService.GetSshClient(connInfo);  //连接测试
+                }
+
+                bool isSuccess = EsService.ConnectionTest(connInfo).Result;
+                if (isSuccess)  //最终检查是否能获取到Es 版本信息 为判断依据
+                {
+                    (new MessageDialog("连接失败！")).ShowAsync();
+                    args.Cancel = true;
+                    return;
+                }
+                if (connInfo.isUseSSH && sshClient.IsConnected)
+                {
                     sshClient.Disconnect();
                     sshClient.Dispose();
                 }
-                else
-                {
-                    string version = await EsFile.GetEsVersion(connInfo.GetLastUrl());
-                    if (string.IsNullOrEmpty(version))
-                    {
-                        (new MessageDialog("连接失败！")).ShowAsync();
-                        args.Cancel = true;
-                        return;
-                    }
-                }
-                EsFile.SaveEsFile(connInfo);
+                EsService.SaveEsFile(connInfo);
                 isSuccess = true;
             }
             catch (Exception ex)

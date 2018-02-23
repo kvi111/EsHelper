@@ -219,7 +219,7 @@ namespace esHelper
             }
             this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
            {
-               result = await EsFile.CreateIndex(esdata.EsConnInfo.GetLastUrl(), IndexName.Text.Trim(), json);
+               result = await EsService.CreateIndex(esdata.EsConnInfo, IndexName.Text.Trim(), json);
                if (result.Success == false)
                {
                    args.Cancel = true;

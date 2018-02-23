@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace esHelper.Common
 {
-    public class EsFile
+    public class EsService
     {
         /// <summary>
         /// 
@@ -67,7 +67,7 @@ namespace esHelper.Common
         {
             try
             {
-                string version = await EsFile.GetEsVersion(connInfo.GetLastUrl());
+                string version = await EsService.GetEsVersion(connInfo);
                 if (string.IsNullOrEmpty(version) == false)
                 {
                     return true;
@@ -189,154 +189,15 @@ namespace esHelper.Common
             }
         }
 
-        public static async Task<String> GetURL(String url, String data = "")
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    if (string.IsNullOrEmpty(data) == false)
-                    {
-                        client.DefaultRequestHeaders.Add("data", data);
-                    }
-                    return await client.GetStringAsync(url);//得到返回字符流
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-        public static async Task<String> PostURL(String url, String data = "")
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    //ByteArrayContent bac = new ByteArrayContent(new byte[] { });
-                    //if (string.IsNullOrEmpty(data) == false)
-                    //{
-                    //    byte[] bytes = Encoding.UTF8.GetBytes(data);
-                    //    bac = new ByteArrayContent(bytes);
-                    //}
-                    StringContent stringContent = new StringContent(data, Encoding.UTF8, "application/json");
-                    HttpResponseMessage res = await client.PostAsync(url, stringContent);//得到返回字符流
-                    return await res.Content.ReadAsStringAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public static async Task<String> PutURL0(String url, String data = "")
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())  //handler
-                {
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-
-                    ByteArrayContent bac = new ByteArrayContent(new byte[] { });
-                    bac.Headers.Add("Content-Type", "application/json");
-                    bac.Headers.ContentType = new MediaTypeWithQualityHeaderValue("application/json");
-                    if (string.IsNullOrEmpty(data) == false)
-                    {
-                        byte[] bytes = Encoding.UTF8.GetBytes(data);
-                        bac = new ByteArrayContent(bytes);
-                    }
-                    //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
-                    HttpResponseMessage res = await client.PutAsync(url, bac);//得到返回字符流
-                    return await res.Content.ReadAsStringAsync();
-                }
-
-                //}
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public static async Task<String> PutURL(String url, String data = "")
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-                    StringContent stringContent = new StringContent(data, Encoding.UTF8, "application/json");
-                    HttpResponseMessage res = await client.PutAsync(url, stringContent);//得到返回字符流
-                    return await res.Content.ReadAsStringAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public static async Task<String> PutURL_CreateIndex1(String url, String data = "")
-        {
-            try
-            {
-                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-
-                request.Method = "PUT";
-                request.Accept = "*/*";
-                request.ContentType = "application/json";
-                //request.Headers["Host"] = "localhost:9200";
-                //request.Headers["Accept-Language"] = "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2";
-                //request.Headers["Accept-Encoding"] = "gzip,deflate";
-                //request.Headers["User-Agent"] = "Mozilla /5.0 (Windows NT 10.0; WOW64; rv:58.0) Gecko/20100101 Firefox/58.0";
-
-                byte[] buffer = Encoding.UTF8.GetBytes(data);
-                Stream reqstr = await request.GetRequestStreamAsync();
-                reqstr.Write(buffer, 0, buffer.Length);
-
-                WebResponse response = await request.GetResponseAsync();
-                StreamReader readStream = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
-                return readStream.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-        public static async Task<String> DeleteURL(String url)
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    HttpResponseMessage res = await client.DeleteAsync(url);//得到返回字符流
-                    return await res.Content.ReadAsStringAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-        //public static String PostURL(String url)
-        //{
-        //    using (HttpClient client = new HttpClient())
-        //    {
-        //        HttpResponseMessage response = client.PostAsync(url, null).Result;//得到返回字符流
-        //        return response.Content.ReadAsStringAsync().Result;
-        //    }
-        //}
-
 
         /// <summary>
         /// 获取ES版本
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<String> GetEsVersion(String url)
+        public static async Task<String> GetEsVersion(EsConnectionInfo connInfo) //String url,string userName, string password
         {
-            string json = await GetURL(url);
+            string json = await HttpUtil.GetURL(connInfo.GetLastUrl(), connInfo.esUsername, connInfo.esPassword);
             try
             {
                 JObject jobj = JObject.Parse(json);
@@ -355,11 +216,11 @@ namespace esHelper.Common
         /// <summary>
         /// 获取索引列表
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="connInfo"></param>
         /// <returns></returns>
-        public static async Task<String[]> GetIndexList(String url)
+        public static async Task<String[]> GetIndexList(EsConnectionInfo connInfo)
         {
-            string json = await GetURL(url + "/_cat/indices");
+            string json = await HttpUtil.GetURL(connInfo.GetLastUrl() + "/_cat/indices", connInfo.esUsername, connInfo.esPassword);
             try
             {
                 return json.Split(Environment.NewLine.ToCharArray());
@@ -375,11 +236,11 @@ namespace esHelper.Common
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<FuncResult> CreateIndex(String url, String indexName, String json)
+        public static async Task<FuncResult> CreateIndex(EsConnectionInfo connInfo, String indexName, String json)
         {
             try
             {
-                string result = await EsFile.PutURL(url + "/" + indexName, json);
+                string result = await HttpUtil.PutURL(connInfo.GetLastUrl() + "/" + indexName, json, connInfo.esUsername, connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
                     return new FuncResult() { Success = false, Message = "put error" };
@@ -413,13 +274,13 @@ namespace esHelper.Common
         /// <param name="pageIndex">开始位置</param>
         /// <param name="pageCount">每页数量</param>
         /// <returns></returns>
-        public static async Task<PerPageData> GetIndexData(String url, String indexName, int pageIndex = 0, int pageSize = 20)
+        public static async Task<PerPageData> GetIndexData(EsConnectionInfo connInfo, String indexName, int pageIndex = 0, int pageSize = 20)
         {
             PerPageData pData;
             try
             {
                 String json = "{\"query\": {\"match_all\": { }},\"from\": " + (pageIndex * pageSize).ToString() + ", \"size\": " + pageSize.ToString() + "}";
-                string result = await PostURL(url + "/" + indexName + "/_search", json);
+                string result = await HttpUtil.PostURL(connInfo.GetLastUrl() + "/" + indexName + "/_search", json, connInfo.esUsername, connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
                     return null;
@@ -449,11 +310,11 @@ namespace esHelper.Common
         /// <param name="url"></param>
         /// <param name="indexName"></param>
         /// <returns></returns>
-        public static async Task<JObject> GetIndexMapping(String url, String indexName)
+        public static async Task<JObject> GetIndexMapping(EsConnectionInfo connInfo, String indexName)
         {
             try
             {
-                string result = await GetURL(url + "/" + indexName);
+                string result = await HttpUtil.GetURL(connInfo.GetLastUrl() + "/" + indexName, connInfo.esUsername, connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
                     return null;
@@ -480,11 +341,11 @@ namespace esHelper.Common
         /// <param name="url"></param>
         /// <param name="indexName"></param>
         /// <returns></returns>
-        public static async Task<bool> OpenIndex(String url, String indexName)
+        public static async Task<bool> OpenIndex(EsConnectionInfo connInfo, String indexName)
         {
             try
             {
-                string result = await PostURL(url + "/" + indexName + "/_open");
+                string result = await HttpUtil.PostURL(connInfo.GetLastUrl() + "/" + indexName + "/_open", userName: connInfo.esUsername, password: connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
                     return false;
@@ -510,11 +371,11 @@ namespace esHelper.Common
         /// <param name="url"></param>
         /// <param name="indexName"></param>
         /// <returns></returns>
-        public static async Task<bool> CloseIndex(String url, String indexName)
+        public static async Task<bool> CloseIndex(EsConnectionInfo connInfo, String indexName)
         {
             try
             {
-                string result = await PostURL(url + "/" + indexName + "/_close");
+                string result = await HttpUtil.PostURL(connInfo.GetLastUrl() + "/" + indexName + "/_close", userName: connInfo.esUsername, password: connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
                     return false;
@@ -541,11 +402,11 @@ namespace esHelper.Common
         /// <param name="url"></param>
         /// <param name="indexName"></param>
         /// <returns></returns>
-        public static async Task<bool> DeleteIndex(String url, String indexName)
+        public static async Task<bool> DeleteIndex(EsConnectionInfo connInfo, String indexName)
         {
             try
             {
-                string result = await DeleteURL(url + "/" + indexName);
+                string result = await HttpUtil.DeleteURL(connInfo.GetLastUrl() + "/" + indexName, connInfo.esUsername, connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
                     return false;
