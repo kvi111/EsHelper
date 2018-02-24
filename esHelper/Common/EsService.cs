@@ -63,11 +63,11 @@ namespace esHelper.Common
         /// </summary>
         /// <param name="connInfo"></param>
         /// <returns></returns>
-        public static async Task<bool> ConnectionTest(EsConnectionInfo connInfo)
+        public static bool ConnectionTest(EsConnectionInfo connInfo)
         {
             try
             {
-                string version = await EsService.GetEsVersion(connInfo);
+                string version = EsService.GetEsVersion(connInfo);
                 if (string.IsNullOrEmpty(version) == false)
                 {
                     return true;
@@ -193,11 +193,11 @@ namespace esHelper.Common
         /// <summary>
         /// 获取ES版本
         /// </summary>
-        /// <param name="url"></param>
+        /// <param name="connInfo"></param>
         /// <returns></returns>
-        public static async Task<String> GetEsVersion(EsConnectionInfo connInfo) //String url,string userName, string password
+        public static String GetEsVersion(EsConnectionInfo connInfo)
         {
-            string json = await HttpUtil.GetURL(connInfo.GetLastUrl(), connInfo.esUsername, connInfo.esPassword);
+            string json = HttpUtil.GetURL_SYNC(connInfo.GetLastUrl(), connInfo.esUsername, connInfo.esPassword);
             try
             {
                 JObject jobj = JObject.Parse(json);

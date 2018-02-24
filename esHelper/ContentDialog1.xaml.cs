@@ -1,6 +1,7 @@
 ﻿using esHelper.Common;
 using Renci.SshNet;
 using System;
+using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -21,19 +22,22 @@ namespace esHelper
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            PageUtil.SetLoadingCursor();
             connInfo = new EsConnectionInfo();
             connInfo.connectionName = connetionName.Text.Trim() == "" ? esIp.Text.Trim() + "_" + esPort.Text.Trim() : connetionName.Text.Trim();
 
             if (EsService.checkFileName(connInfo.connectionName) == false)
             {
-                (new MessageDialog("连接名称无效！")).ShowAsync();
+                PageUtil.ShowMsg("Connection name invalid");
+                //(new MessageDialog("连接名称无效！")).ShowAsync();
                 args.Cancel = true;
                 return;
             }
 
             if (EsService.checkFileExists(connInfo.connectionName))
             {
-                (new MessageDialog("连接名称重复！")).ShowAsync();
+                PageUtil.ShowMsg("Connection name already exists");
+                //(new MessageDialog("连接名称重复！")).ShowAsync();
                 args.Cancel = true;
                 return;
             }
@@ -43,7 +47,8 @@ namespace esHelper
             int intLanPort = 0;
             if (int.TryParse(esPort.Text.Trim(), out intLanPort) == false)
             {
-                (new MessageDialog("内网端口输入不正确！")).ShowAsync();
+                PageUtil.ShowMsg("Lan Port is not correct");
+                //(new MessageDialog("内网端口输入不正确！")).ShowAsync();
                 args.Cancel = true;
                 return;
             }
@@ -52,14 +57,15 @@ namespace esHelper
             connInfo.esUsername = esUserName.Text.Trim();
             connInfo.esPassword = esPassword.Text.Trim();
 
-            connInfo.localPort = connInfo.esPort + 1; //把es端口设置和本地端口一样
+            connInfo.localPort = connInfo.esPort + 1; //把本地端口设置为es端口加1
 
             connInfo.isUseSSH = isUseSSH.IsOn;
             if (isUseSSH.IsOn)
             {
                 if (string.IsNullOrEmpty(sshIp.Text.Trim()) || string.IsNullOrEmpty(sshPort.Text.Trim()) || string.IsNullOrEmpty(userName.Text.Trim()))
                 {
-                    (new MessageDialog("必须输入SSH主机名、端口和用户名！")).ShowAsync();
+                    PageUtil.ShowMsg("Lan Port is not correct");
+                    //(new MessageDialog("必须输入SSH主机名、端口和用户名！")).ShowAsync();
                     args.Cancel = true;
                     return;
                 }
@@ -69,7 +75,8 @@ namespace esHelper
                 int intSshPort = 0;
                 if (int.TryParse(sshPort.Text.Trim(), out intSshPort) == false)
                 {
-                    (new MessageDialog("端口输入不正确！")).ShowAsync();
+                    PageUtil.ShowMsg("Port is not correct");
+                    //(new MessageDialog("端口输入不正确！")).ShowAsync();
                     args.Cancel = true;
                     return;
                 }
@@ -86,10 +93,12 @@ namespace esHelper
                     sshClient = EsService.GetSshClient(connInfo);  //连接测试
                 }
 
-                bool isSuccess = EsService.ConnectionTest(connInfo).Result;
-                if (isSuccess)  //最终检查是否能获取到Es 版本信息 为判断依据
+                isSuccess = EsService.ConnectionTest(connInfo);
+
+                if (isSuccess == false)  //最终检查是否能获取到Es 版本信息 为判断依据
                 {
-                    (new MessageDialog("连接失败！")).ShowAsync();
+                    PageUtil.ShowMsg("Connect fail");
+                    //(new MessageDialog("连接失败！")).ShowAsync();
                     args.Cancel = true;
                     return;
                 }
@@ -99,11 +108,13 @@ namespace esHelper
                     sshClient.Dispose();
                 }
                 EsService.SaveEsFile(connInfo);
-                isSuccess = true;
+                PageUtil.SetDefaultCursor();
+
             }
             catch (Exception ex)
             {
-                (new MessageDialog("连接异常！")).ShowAsync();
+                PageUtil.ShowMsg("Connect error");
+                //(new MessageDialog("连接异常！")).ShowAsync();
                 args.Cancel = true;
             }
         }

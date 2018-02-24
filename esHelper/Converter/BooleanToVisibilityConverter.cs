@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace esHelper.Common
+namespace esHelper.Converter
 {
-    public class ItemIndexConverter : IValueConverter
+    public class BooleanToVisibilityConverter : IValueConverter
     {
+        public bool IsInverse { get; set; }
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            ListViewItem item = (ListViewItem)value;
-            ListView listView = ItemsControl.ItemsControlFromItemContainer(item) as ListView;
-            int index = listView.IndexFromContainer(item) + 1;  //得到序号
-            if (index % 2 == 1)
+            bool visibility = (bool)value;
+            if (IsInverse)
             {
-                return true;
+                visibility = !visibility;
             }
-            return false;
+
+            return visibility ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

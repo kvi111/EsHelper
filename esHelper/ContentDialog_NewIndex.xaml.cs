@@ -197,44 +197,6 @@ namespace esHelper
             lastCheckSP = (StackPanel)sp.Parent;
         }
 
-        private async void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-            if (string.IsNullOrEmpty(IndexName.Text.Trim()))
-            {
-                (new MessageDialog("please input the index name.")).ShowAsync();
-                args.Cancel = true;
-                return;
-            }
-            if (string.IsNullOrEmpty(TypeName.Text.Trim()))
-            {
-                (new MessageDialog("please input the type name.")).ShowAsync();
-                args.Cancel = true;
-                return;
-            }
-            string json = "";
-            if (checkAllField(ref json) == false)
-            {
-                args.Cancel = true;
-                return;
-            }
-            this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-           {
-               result = await EsService.CreateIndex(esdata.EsConnInfo, IndexName.Text.Trim(), json);
-               if (result.Success == false)
-               {
-                   args.Cancel = true;
-                   (new MessageDialog(result.Message)).ShowAsync();
-                   return;
-               }
-           });
-
-        }
-
-        private void ContentDialog_SecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-
-        }
-
         private void comboxAnalyzer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //ComboBox cb = (ComboBox)sender;
@@ -250,6 +212,45 @@ namespace esHelper
             //{
             //    chkbox.IsEnabled = true;
             //}
+        }
+
+        private async void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(IndexName.Text.Trim()))
+            {
+                (new MessageDialog("please input the index name.")).ShowAsync();
+               
+                //args.Cancel = true;
+                return;
+            }
+            if (string.IsNullOrEmpty(TypeName.Text.Trim()))
+            {
+                (new MessageDialog("please input the type name.")).ShowAsync();
+                //args.Cancel = true;
+                return;
+            }
+            string json = "";
+            if (checkAllField(ref json) == false)
+            {
+                //args.Cancel = true;
+                return;
+            }
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+            {
+                result = await EsService.CreateIndex(esdata.EsConnInfo, IndexName.Text.Trim(), json);
+                if (result.Success == false)
+                {
+                    //args.Cancel = true;
+                    (new MessageDialog(result.Message)).ShowAsync();
+                    return;
+                }
+                this.Hide();
+            });
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
         }
     }
 }

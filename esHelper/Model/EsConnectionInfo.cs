@@ -8,6 +8,11 @@ namespace esHelper.Common
 {
     public class EsConnectionInfo
     {
+        public EsConnectionInfo()
+        {
+            id = Guid.NewGuid().ToString();
+        }
+        public string id { get; set; }
         public string connectionName { get; set; }
         public string esIp { get; set; }
         public int esPort { get; set; }

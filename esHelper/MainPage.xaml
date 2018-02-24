@@ -2,7 +2,7 @@
     x:Class="esHelper.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:esHelper.Common"
+    xmlns:cvt="using:esHelper.Converter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tvs="using:TreeViewControl"
@@ -22,11 +22,11 @@
             <MenuFlyoutItem Name="Menu_Delete" Text="删除连接" Click="Menu_Delete_Click"/>
         </MenuFlyout>
         <tvs:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
-        <local:GlyphConverter x:Key="folderGlyphConverter" ExpandedGlyph="&#xED44;" CollapsedGlyph="&#xED42;" />
-        <local:GlyphConverter x:Key="folderOutlineGlyphConverter" ExpandedGlyph="&#xED43;" CollapsedGlyph="&#xED41;" />
-        <local:GlyphConverter x:Key="expandCollapseGlyphConverter" ExpandedGlyph="&#xE70D;" CollapsedGlyph="&#xE76C;"/>
-        <local:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"  />
-        <local:BooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter" IsInverse="True" />
+        <cvt:GlyphConverter x:Key="folderGlyphConverter" ExpandedGlyph="&#xED44;" CollapsedGlyph="&#xED42;" />
+        <cvt:GlyphConverter x:Key="folderOutlineGlyphConverter" ExpandedGlyph="&#xED43;" CollapsedGlyph="&#xED41;" />
+        <cvt:GlyphConverter x:Key="expandCollapseGlyphConverter" ExpandedGlyph="&#xE70D;" CollapsedGlyph="&#xE76C;"/>
+        <cvt:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"  />
+        <cvt:BooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter" IsInverse="True" />
 
         <DataTemplate x:Key="TreeViewItemDataTemplate">
             <StackPanel Orientation="Horizontal" Height="40" Margin="{Binding Depth, Converter={StaticResource IntToIndConverter}}" AllowDrop="False">

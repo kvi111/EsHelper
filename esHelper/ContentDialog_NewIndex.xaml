@@ -6,23 +6,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="Create index"
-    PrimaryButtonText="Ok"
-    SecondaryButtonText="Cancel"
-    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
-    SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
-    Height="1000"
-    Width="600">
+    Title="Create index">
 
     <StackPanel Orientation="Vertical" Width="500">
         <StackPanel Orientation="Horizontal">
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Index Name：" Width="150"/>
-            <TextBox HorizontalAlignment="Left" InputScope="Number" VerticalAlignment="Center" Name="IndexName" Width="300" PlaceholderText=""/>
+            <TextBox HorizontalAlignment="Left" InputScope="Number" VerticalAlignment="Center" Name="IndexName" Width="300" PlaceholderText="" BorderThickness="1"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">
             <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Type Name：" Width="150"/>
-            <TextBox HorizontalAlignment="Left" VerticalAlignment="Center" Name="TypeName" Width="300" Text=""/>
+            <TextBox HorizontalAlignment="Left" VerticalAlignment="Center" Name="TypeName" Width="300" Text="" BorderThickness="1"/>
         </StackPanel>
 
         <StackPanel Orientation="Vertical" Margin="0,20,0,0">
@@ -76,7 +70,7 @@
                 <TextBlock Width="120" VerticalAlignment="Center" TextAlignment="Center">Analyzer</TextBlock>
                 <TextBlock Width="60" VerticalAlignment="Center" TextAlignment="Center">Index</TextBlock>
             </StackPanel>
-            <ScrollViewer Height="475" Width="500" VerticalScrollBarVisibility="Visible">
+            <ScrollViewer Height="450" VerticalScrollBarVisibility="Visible">
                 <StackPanel Orientation="Vertical" Name="spContent">
                     <StackPanel Orientation="Horizontal" Height="32">
                         <StackPanel Width="40" VerticalAlignment="Top">
@@ -114,6 +108,10 @@
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+            <StackPanel Orientation="Horizontal" Height="35" HorizontalAlignment="Center">
+                <Button Name="btnSave" Click="btnSave_Click" Content="Save" Background="#f0f0f0" Width="100" BorderThickness="1" BorderBrush="#f5f5f5"/>
+                <Button Name="btnCancel" Click="btnCancel_Click" Content="Cancel" Background="#f0f0f0" Width="100" BorderThickness="1" Margin="20,0,0,0" />
+            </StackPanel>
         </StackPanel>
 
     </StackPanel>

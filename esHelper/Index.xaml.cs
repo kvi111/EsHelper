@@ -108,19 +108,19 @@ namespace esHelper
             textBlockPageIndex.Text = (perPageData.pageIndex + 1).ToString();
             textBlockTotalPageCount.Text = perPageData.totalPageCount.ToString();
             pivot1.SelectedIndex = 1;
+
+            rowIndex = 0;
+            gridData.ColumnSpacing = 2;
+            gridData.RowSpacing = 5;
+            gridData.Children.Clear();
+            gridData.RowDefinitions.Clear();
+            gridData.ColumnDefinitions.Clear();
             if (perPageData != null)
             {
                 JObject jObject = perPageData.pageData as JObject;
                 JArray arrData = jObject.Root["hits"]["hits"] as JArray;
                 if (arrData.Count > 0)
                 {
-                    rowIndex = 0;
-
-                    gridData.ColumnSpacing = 2;
-                    gridData.RowSpacing = 5;
-                    gridData.Children.Clear();
-                    gridData.RowDefinitions.Clear();
-                    gridData.ColumnDefinitions.Clear();
 
                     gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行, 存放标题栏
                     foreach (JObject jObj in arrData) //行

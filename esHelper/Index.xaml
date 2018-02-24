@@ -5,15 +5,16 @@
     xmlns:local="using:esHelper"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:cvt="using:esHelper.Common"
+    xmlns:cvt="using:esHelper.Converter"
     mc:Ignorable="d">
 
     <Page.Resources>
         <cvt:OpenCloseConverter x:Key="urlCvt"/>
         <cvt:ItemIndexConverter x:Key="idxcvt"/>
+        <cvt:ShowBrowseConverter x:Key="isShowBrowse"/>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="#f5f5f5">
         <Pivot Grid.Row="1" Name="pivot1">
             <PivotItem Header="Index" Name="pivotItemIndex">
                 <Grid Height="AUTO" Width="AUTO">
@@ -81,7 +82,7 @@
                                             <TextBlock Width="150" Text="{Binding DocumentCount}" VerticalAlignment="Center" TextAlignment="Right"/>
                                             <TextBlock Width="150" Text="{Binding ShardsCount}" VerticalAlignment="Center" TextAlignment="Right"/>
                                             <TextBlock Width="150" Text="{Binding DataSpace}" VerticalAlignment="Center" TextAlignment="Right"/>
-                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="10,0,5,0">browse</HyperlinkButton>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="10,0,5,0" Visibility="{Binding isOpen,Converter={StaticResource isShowBrowse}}">browse</HyperlinkButton>
                                             <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonMapping_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0">mapping</HyperlinkButton>
                                             <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonOpenClose_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="{Binding isOpen,Converter={StaticResource urlCvt}}"/>
                                             <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonDelete_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="delete"/>

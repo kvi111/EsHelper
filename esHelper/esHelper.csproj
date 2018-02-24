@@ -99,19 +99,22 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BlankPage1.xaml.cs">
-      <DependentUpon>BlankPage1.xaml</DependentUpon>
+    <Compile Include="Common\PageUtil.cs" />
+    <Compile Include="Converter\ShowBrowseConverter.cs" />
+    <Compile Include="Welcome.xaml.cs">
+      <DependentUpon>Welcome.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Convert\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Common\PageBase.cs" />
+    <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\EsService.cs" />
     <Compile Include="Model\EsIndex.cs" />
     <Compile Include="Model\EsSystemData.cs" />
     <Compile Include="Model\FuncResult.cs" />
-    <Compile Include="Convert\GlyphConverter.cs" />
+    <Compile Include="Converter\GlyphConverter.cs" />
     <Compile Include="Model\EsConnectionInfo.cs" />
     <Compile Include="Common\HttpUtil.cs" />
-    <Compile Include="Convert\ItemIndexConverter.cs" />
-    <Compile Include="Convert\OpenCloseConverter.cs" />
+    <Compile Include="Converter\ItemIndexConverter.cs" />
+    <Compile Include="Converter\OpenCloseConverter.cs" />
     <Compile Include="Model\PerPageData.cs" />
     <Compile Include="ContentDialog1.xaml.cs">
       <DependentUpon>ContentDialog1.xaml</DependentUpon>
@@ -152,7 +155,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="BlankPage1.xaml">
+    <Page Include="Welcome.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

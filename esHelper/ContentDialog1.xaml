@@ -6,16 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="新建连接"
-    PrimaryButtonText="确定"
-    SecondaryButtonText="取消"
+    Title="New Connection"
+    PrimaryButtonText="Save"
+    SecondaryButtonText="Cancel"
     PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
     SecondaryButtonClick="ContentDialog_SecondaryButtonClick">
 
 
     <Grid>
         <Pivot Grid.Row="1">
-            <PivotItem Header="常规">
+            <PivotItem Header="ElasticSearch">
                 <Grid Height="300" Width="500">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50"></RowDefinition>
@@ -28,20 +28,20 @@
                         <ColumnDefinition Width="150"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="连接名称："/>
-                    <TextBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Name="connetionName" Width="300" PlaceholderText=""/>
+                    <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Connetion Name:"/>
+                    <TextBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Name="connetionName" Width="300" PlaceholderText="" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="ES主机名或IP地址："/>
-                    <TextBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esIp" Width="300" Text="localhost"/>
+                    <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="ElasticSearch Host:"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esIp" Width="300" Text="localhost" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="ES端口："/>
-                    <TextBox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esPort" Width="300" Text="9200"/>
+                    <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Text="ElasticSearch Port:"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esPort" Width="300" Text="9200" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="ES用户名："/>
-                    <TextBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esUserName" Width="300" Text="elastic"/>
+                    <TextBlock Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="X-Pack Username:"/>
+                    <TextBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esUserName" Width="300" Text="elastic" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Text="ES密码："/>
-                    <TextBox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esPassword" Width="300" Text=""/>
+                    <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Text="X-Pack Password:"/>
+                    <TextBox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Name="esPassword" Width="300" Text="" BorderThickness="1"/>
                 </Grid>
             </PivotItem>
             <PivotItem Header="SSH">
@@ -57,20 +57,20 @@
                         <ColumnDefinition Width="150"></ColumnDefinition>
                         <ColumnDefinition Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="使用ssh隧道"/>
-                    <ToggleSwitch Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Name="isUseSSH" Toggled="isUseSSH_Toggled" Width="300" IsOn="False"/>
+                    <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Use SSH Tunnel"/>
+                    <ToggleSwitch Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Name="isUseSSH" Toggled="isUseSSH_Toggled" Width="300" IsOn="False" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lblsshIp" Text="主机名或IP地址："/>
-                    <TextBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="sshIp" Width="300" Text="" IsEnabled="False"/>
+                    <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lblsshIp" Text="Host："/>
+                    <TextBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Name="sshIp" Width="300" Text="" IsEnabled="False" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lblsshPort" Text="端口："/>
-                    <TextBox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Name="sshPort" Width="300" Text="22" IsEnabled="False"/>
+                    <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lblsshPort" Text="Port："/>
+                    <TextBox Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" Name="sshPort" Width="300" Text="22" IsEnabled="False" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lbluserName" Text="用户名："/>
-                    <TextBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Name="userName" Width="300" Text="root" IsEnabled="False"/>
+                    <TextBlock Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lbluserName" Text="UserName："/>
+                    <TextBox Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" Name="userName" Width="300" Text="root" IsEnabled="False" BorderThickness="1"/>
 
-                    <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lblpassword" Text="密码："/>
-                    <TextBox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Name="password" Width="300" Text="" IsEnabled="False"/>
+                    <TextBlock Grid.Column="0" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Name="lblpassword" Text="Password："/>
+                    <TextBox Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Name="password" Width="300" Text="" IsEnabled="False" BorderThickness="1"/>
                 </Grid>
             </PivotItem>
         </Pivot>

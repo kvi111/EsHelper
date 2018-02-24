@@ -9,6 +9,7 @@ using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
@@ -31,6 +32,8 @@ namespace esHelper
             sampleTreeView.TreeViewItemClick += SampleTreeView_TreeViewItemClick;
             sampleTreeView.RightTapped += SampleTreeView_RightTapped;
             sampleTreeView.DoubleTapped += SampleTreeView_DoubleTapped;
+
+            contentFrame.Navigate(typeof(Welcome), null);
 
             //TreeNode workFolder = CreateFolderNode("Work Documents");
             //workFolder.Add(CreateFileNode("Feature Functional Spec"));
@@ -98,7 +101,7 @@ namespace esHelper
                 case EsTreeItemType.esIndex:
                     contentFrame.Navigate(typeof(Index), args);
                     break;
-                case EsTreeItemType.esSysIndex:
+                case EsTreeItemType.esTemplate:
                     break;
                 case EsTreeItemType.esPlugin:
                     break;
@@ -148,7 +151,11 @@ namespace esHelper
         private void AddButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             ContentDialog1 cd1 = new ContentDialog1();
-            cd1.ShowAsync();
+            cd1.ShowAsync().GetResults();
+            if (cd1.isSuccess && cd1.connInfo != null)
+            {
+                AddNode(cd1.connInfo);
+            }
         }
 
         private void Menu_Refresh_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -158,19 +165,26 @@ namespace esHelper
             listConnectionInfo = EsService.GetEsFiles();
             foreach (EsConnectionInfo connInfo in listConnectionInfo)
             {
-                TreeNode workFolder = new TreeNode() { Data = new EsSystemData(connInfo.connectionName, EsTreeItemType.esConnection) { EsConnInfo = connInfo } };
-                sampleTreeView.RootNode.Add(workFolder);
+                AddNode(connInfo);
             }
         }
 
-        private async void Menu_Open_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void AddNode(EsConnectionInfo connInfo)
         {
+            TreeNode workFolder = new TreeNode() { Data = new EsSystemData(connInfo.connectionName, EsTreeItemType.esConnection) { EsConnInfo = connInfo } };
+            sampleTreeView.RootNode.Add(workFolder);
+        }
+
+        private void Menu_Open_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            PageUtil.SetLoadingCursor();
             try
             {
                 if (lastTreeNode != null && lastTreeNode.Data != null)
                 {
                     if (lastTreeNode.HasItems)
                     {
+                        PageUtil.SetDefaultCursor();
                         return;
                         //lastTreeNode.Clear();
                     }
@@ -186,25 +200,30 @@ namespace esHelper
                         }
                     }
 
-                    if (await EsService.ConnectionTest(esSD.EsConnInfo) == false)   //最终检查是否能获取到Es 版本信息 为判断依据
+                    if (EsService.ConnectionTest(esSD.EsConnInfo) == false)   //最终检查是否能获取到Es 版本信息 为判断依据
                     {
-                        (new MessageDialog("连接失败！")).ShowAsync();
+                        PageUtil.ShowMsg("connect fail!");
+                        //(new MessageDialog("连接失败！")).ShowAsync();
                         return;
                     }
 
                     AddTreeNodeChild(lastTreeNode);
                 }
+                PageUtil.SetDefaultCursor();
             }
             catch
             {
-                (new MessageDialog("连接异常！")).ShowAsync();
+                PageUtil.ShowMsg("connect error!");
+                //(new MessageDialog("连接异常！")).ShowAsync();
             }
         }
+
+
 
         private void AddTreeNodeChild(TreeNode tn)
         {
             tn.Add(new TreeNode() { Data = new EsSystemData("Index", EsTreeItemType.esIndex) });
-            tn.Add(new TreeNode() { Data = new EsSystemData("SysIndex", EsTreeItemType.esSysIndex) });
+            tn.Add(new TreeNode() { Data = new EsSystemData("Template", EsTreeItemType.esTemplate) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Plugin", EsTreeItemType.esPlugin) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
             //tn.IsExpanded = true;
@@ -223,6 +242,8 @@ namespace esHelper
                 }
                 lastTreeNode.IsExpanded = false;
                 lastTreeNode.Clear();
+
+                contentFrame.Navigate(typeof(Welcome), e);
             }
         }
         private async void Menu_Create_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -238,8 +259,8 @@ namespace esHelper
         }
         private void Menu_Edit_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            ContentDialog1 cd1 = new ContentDialog1();
-            cd1.ShowAsync().GetResults();
+            //ContentDialog1 cd1 = new ContentDialog1();
+            //cd1.ShowAsync().GetResults();
         }
 
         private async void Menu_Delete_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -272,7 +293,8 @@ namespace esHelper
 
         private void Menu_Help_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            (new MessageDialog("esHelper for ElasticSearch 6！")).ShowAsync();
+            PageUtil.ShowMsg("esHelper for above ElasticSearch 5！");
+            //(new MessageDialog("esHelper for above ElasticSearch 5！")).ShowAsync();
         }
     }
 }

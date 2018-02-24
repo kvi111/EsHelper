@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace esHelper.Common
+namespace esHelper.Converter
 {
     public class OpenCloseConverter : IValueConverter
     {

@@ -3,27 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace esHelper.Common
+namespace esHelper.Converter
 {
-    public sealed class GlyphConverter : IValueConverter
+    public class ShowBrowseConverter : IValueConverter
     {
-        public string ExpandedGlyph { get; set; }
-        public string CollapsedGlyph { get; set; }
-
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var isExpanded = value as bool?;
-
-            if (isExpanded.HasValue && isExpanded.Value)
+            string isopen = value as string;
+            if (isopen == "open")
             {
-                return ExpandedGlyph;
+                return Visibility.Visible;
             }
-            else
-            {
-                return CollapsedGlyph;
-            }
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

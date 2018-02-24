@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,6 +8,23 @@ namespace esHelper.Common
 {
     public class HttpUtil
     {
+        public static String GetURL_SYNC(String url, string userName = "", string password = "")
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
+                    AddAuthorization(userName, password, client);
+                    return client.GetStringAsync(url).Result;//得到返回字符流
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public static async Task<String> GetURL(String url, string userName = "", string password = "")
         {
             try
