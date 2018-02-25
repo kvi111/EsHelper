@@ -28,6 +28,9 @@ namespace esHelper
         {
             this.InitializeComponent();
 
+            Style buttonStyle = (Style)Application.Current.Resources["ButtonStyleNormal"];
+            PrimaryButtonStyle = buttonStyle;
+            SecondaryButtonStyle = buttonStyle;
         }
 
         private bool checkLast()

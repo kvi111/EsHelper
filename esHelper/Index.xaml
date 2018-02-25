@@ -14,7 +14,7 @@
         <cvt:ShowBrowseConverter x:Key="isShowBrowse"/>
     </Page.Resources>
 
-    <Grid Background="#f5f5f5">
+    <Grid>
         <Pivot Grid.Row="1" Name="pivot1">
             <PivotItem Header="Index" Name="pivotItemIndex">
                 <Grid Height="AUTO" Width="AUTO">
@@ -28,15 +28,12 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Index list"/>
                     <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="5,0,0,0">
-                        <!--<Border Background="AliceBlue">
-                            <TextBlock>aaa</TextBlock>
-                        </Border>-->
                         <AppBarButton Height="35" Width="35" Click="AppBarButtonAdd_Click">
                             <AppBarButton.Icon>
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="Add"/>
                             </AppBarButton.Icon>
                             <ToolTipService.ToolTip>
-                                <ToolTip Content="add index" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                                <ToolTip Content="add index" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
                         <AppBarButton Height="35" Width="35" Click="ToggleSwitch_Toggled" Margin="20,0,0,0">
@@ -44,7 +41,7 @@
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="Refresh"/>
                             </AppBarButton.Icon>
                             <ToolTipService.ToolTip>
-                                <ToolTip Content="refresh" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                                <ToolTip Content="refresh" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
                         <!--<AppBarButton Icon="Add" Label="add index" Click="AppBarButtonAdd_Click" IsCompact="True"/>-->
@@ -62,19 +59,19 @@
                     <ScrollViewer Margin="0,10,0,0" Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
                         <StackPanel  Orientation="Vertical">
                             <StackPanel  Orientation="Horizontal" Background="AliceBlue" Height="50" VerticalAlignment="Center">
-                                <TextBlock Width="300" Text="Id"  VerticalAlignment="Center" TextAlignment="Center" />
-                                <TextBlock Width="300" Text="Name" VerticalAlignment="Center" TextAlignment="Center" />
-                                <TextBlock Width="150" Text="IsOpen" VerticalAlignment="Center"/>
-                                <TextBlock Width="150" Text="Color" VerticalAlignment="Center"/>
-                                <TextBlock Width="150" Text="Document Count" VerticalAlignment="Center" TextAlignment="Right"/>
-                                <TextBlock Width="150" Text="Shards Count" VerticalAlignment="Center" TextAlignment="Right"/>
-                                <TextBlock Width="150" Text="Data Space" VerticalAlignment="Center" TextAlignment="Right"/>
-                                <TextBlock Width="200" Text="Action" VerticalAlignment="Center" TextAlignment="Center"/>
+                                <TextBlock Width="300" Text="Id"  VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Width="300" Text="Name" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Width="150" Text="IsOpen" VerticalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Width="150" Text="Color" VerticalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Width="150" Text="Document Count" VerticalAlignment="Center"  FontWeight="Bold" TextAlignment="Right"/>
+                                <TextBlock Width="150" Text="Shards Count" VerticalAlignment="Center"  FontWeight="Bold" TextAlignment="Right"/>
+                                <TextBlock Width="150" Text="Data Space" VerticalAlignment="Center"  FontWeight="Bold" TextAlignment="Right"/>
+                                <TextBlock Width="200" Text="Action" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold"/>
                             </StackPanel>
-                            <ListView Name="listview1" SelectionMode="None">
+                            <ListView Name="listview1" SelectionMode="None" Background="White">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center" IsDoubleTapEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},Path=ListViewItem,Converter={StaticResource idxcvt}}">
+                                        <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
                                             <TextBlock Width="300" Text="{Binding Id}" VerticalAlignment="Center" IsTextSelectionEnabled="True"/>
                                             <TextBlock Width="300" Text="{Binding Name}" VerticalAlignment="Center"/>
                                             <TextBlock Width="150" Text="{Binding isOpen}" VerticalAlignment="Center"/>
@@ -82,10 +79,10 @@
                                             <TextBlock Width="150" Text="{Binding DocumentCount}" VerticalAlignment="Center" TextAlignment="Right"/>
                                             <TextBlock Width="150" Text="{Binding ShardsCount}" VerticalAlignment="Center" TextAlignment="Right"/>
                                             <TextBlock Width="150" Text="{Binding DataSpace}" VerticalAlignment="Center" TextAlignment="Right"/>
-                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="10,0,5,0" Visibility="{Binding isOpen,Converter={StaticResource isShowBrowse}}">browse</HyperlinkButton>
-                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonMapping_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0">mapping</HyperlinkButton>
-                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonOpenClose_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="{Binding isOpen,Converter={StaticResource urlCvt}}"/>
-                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonDelete_Click" Command="{Binding Id}" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="delete"/>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" CommandParameter="{Binding Name}" Margin="10,0,5,0" Visibility="{Binding isOpen,Converter={StaticResource isShowBrowse}}">browse</HyperlinkButton>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonMapping_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0">mapping</HyperlinkButton>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonOpenClose_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="{Binding isOpen,Converter={StaticResource urlCvt}}"/>
+                                            <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonDelete_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="delete"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
@@ -97,7 +94,7 @@
             <PivotItem Header="Browse" Name="pivotItemBrowse">
                 <StackPanel Orientation="Vertical" Height="AUTO">
                     <ScrollViewer Name="scrollView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                        <Grid Name="gridData" BorderBrush="AliceBlue" BorderThickness="1">
+                        <Grid Name="gridData" BorderBrush="AliceBlue" BorderThickness="1" Background="White">
                             <!--<Grid.RowDefinitions>
                             <RowDefinition Height="AUTO"></RowDefinition>
                         </Grid.RowDefinitions>
@@ -112,7 +109,7 @@
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="Previous"/>
                             </AppBarButton.Icon>
                             <ToolTipService.ToolTip>
-                                <ToolTip Content="first page" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                                <ToolTip Content="first page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
                         <AppBarButton Height="35" Width="35" Name="AppBarButtonPrevious" Click="AppBarButtonPrevious_Click">
@@ -120,7 +117,7 @@
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="Back"/>
                             </AppBarButton.Icon>
                             <ToolTipService.ToolTip>
-                                <ToolTip Content="previous page" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                                <ToolTip Content="previous page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
                         <TextBlock Height="35" Width="35" Name="textBlockPageIndex" Text="1" TextAlignment="Center" Margin="10,7,0,0"/>
@@ -131,7 +128,7 @@
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="Forward"/>
                             </AppBarButton.Icon>
                             <ToolTipService.ToolTip>
-                                <ToolTip Content="next page" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                                <ToolTip Content="next page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
                         <AppBarButton Height="35" Width="35" Name="AppBarButtonLast" Click="AppBarButtonLast_Click">
@@ -139,18 +136,56 @@
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="Next"/>
                             </AppBarButton.Icon>
                             <ToolTipService.ToolTip>
-                                <ToolTip Content="last page" Placement="Right"  HorizontalOffset="30" VerticalOffset="0" />
+                                <ToolTip Content="last page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
 
                         <TextBlock Height="35" Width="35" Text="page" TextAlignment="Center" Margin="100,7,0,0"/>
-                        <TextBox Height="25" Width="35" Name="textBoxPageIndex" Text="1" TextAlignment="Center" BorderThickness="1" InputScope="Number" VerticalAlignment="Bottom" TextChanged="Textbox_TextChanged"/>
-                        <Button Content="GO" Height="30" BorderThickness="1" Background="Transparent" Click="ButtonGO_Click"/>
+                        <TextBox Height="25" Width="35" Name="textBoxPageIndex" Text="1" TextAlignment="Center" BorderThickness="0" InputScope="Number" VerticalAlignment="Bottom" TextChanged="Textbox_TextChanged"/>
+                        <Button Content="GO" Height="30" BorderThickness="1" Background="Transparent" Click="ButtonGO_Click" Style="{ThemeResource ButtonStyleNormal}"/>
                     </StackPanel>
                 </StackPanel>
             </PivotItem>
             <PivotItem Header="Search" Name="pivotItemSearch">
-
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="5,0,0,0">
+                        <!--<AppBarButton Height="35" Width="35">
+                            <AppBarButton.Icon>
+                                <SymbolIcon Margin="0,-10,0,0" Symbol="Clear"/>
+                            </AppBarButton.Icon>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="close" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                            </ToolTipService.ToolTip>
+                        </AppBarButton>
+                        <AppBarSeparator/>-->
+                        <AppBarButton Height="35" Width="35" Click="AppBarButtonRun_Click">
+                            <AppBarButton.Icon>
+                                <SymbolIcon Margin="0,-10,0,0" Symbol="Play"/>
+                            </AppBarButton.Icon>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="run" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                            </ToolTipService.ToolTip>
+                        </AppBarButton>
+                        <AppBarButton Height="35" Width="35" Margin="20,0,0,0" Click="AppBarButtonAutoIndent_Click">
+                            <AppBarButton.Icon>
+                                <SymbolIcon Margin="0,-10,0,0" Symbol="AlignLeft"/>
+                            </AppBarButton.Icon>
+                            <ToolTipService.ToolTip>
+                                <ToolTip Content="auto indent" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                            </ToolTipService.ToolTip>
+                        </AppBarButton>
+                    </StackPanel>
+                    <TextBox Name="txtBoxCommand" Grid.Row="1" Grid.Column="0" AcceptsReturn="True" TextWrapping="Wrap" BorderThickness="1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,10,5,10"></TextBox>
+                    <TextBox Name="txtBoxResult" Grid.Row="1" Grid.Column="1" AcceptsReturn="True" TextWrapping="Wrap" BorderThickness="1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5,10,0,10" IsReadOnly="True"></TextBox>
+                </Grid>
             </PivotItem>
         </Pivot>
     </Grid>

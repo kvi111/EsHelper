@@ -76,7 +76,7 @@
         </DataTemplate>
     </Page.Resources>
 
-    <Grid Background="#f0f0f0">
+    <Grid Background="{StaticResource my_Brush_CommandBackground}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -134,7 +134,7 @@
                 </TransitionCollection>
             </tvs:TreeView.ItemContainerTransitions>
         </tvs:TreeView>
-        <Frame Name="contentFrame" Grid.Row="1" Grid.Column="1" Background="#f5f5f5">
+        <Frame Name="contentFrame" Grid.Row="1" Grid.Column="1" Background="{ThemeResource my_Brush_ContentBackground}">
 
         </Frame>
     </Grid>

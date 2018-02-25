@@ -116,8 +116,8 @@
     <Compile Include="Converter\ItemIndexConverter.cs" />
     <Compile Include="Converter\OpenCloseConverter.cs" />
     <Compile Include="Model\PerPageData.cs" />
-    <Compile Include="ContentDialog1.xaml.cs">
-      <DependentUpon>ContentDialog1.xaml</DependentUpon>
+    <Compile Include="ContentDialog_Connection.xaml.cs">
+      <DependentUpon>ContentDialog_Connection.xaml</DependentUpon>
     </Compile>
     <Compile Include="ContentDialog_Mapping.xaml.cs">
       <DependentUpon>ContentDialog_Mapping.xaml</DependentUpon>
@@ -159,7 +159,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContentDialog1.xaml">
+    <Page Include="ContentDialog_Connection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

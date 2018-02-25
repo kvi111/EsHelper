@@ -1,5 +1,5 @@
 ﻿<ContentDialog
-    x:Class="esHelper.ContentDialog1"
+    x:Class="esHelper.ContentDialog_Connection"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:esHelper"

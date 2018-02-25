@@ -30,6 +30,10 @@ namespace esHelper
         public Index()
         {
             this.InitializeComponent();
+
+            //pivot1.Items.Add(new PivotItem() { Header = "111" });
+            //PivotItem pi = pivot1.Items[0] as PivotItem;
+            //pivot1.Items.RemoveAt(1);
         }
 
         #region index
@@ -247,7 +251,7 @@ namespace esHelper
             ContentDialog_NewIndex cdni = new ContentDialog_NewIndex();
             cdni.esdata = esdata;
             await cdni.ShowAsync();
-            if (cdni.result!=null && cdni.result.Success)
+            if (cdni.result != null && cdni.result.Success)
             {
                 ToggleSwitch_Toggled(sender, e); //重新加载索引列表
             }
@@ -286,7 +290,7 @@ namespace esHelper
                 await GetBrowsePageData(indexName, totalPageCount - 1);
             }
         }
-        
+
 
         private async void ButtonGO_Click(object sender, RoutedEventArgs e)
         {
@@ -310,6 +314,83 @@ namespace esHelper
                 textbox.SelectionStart = pos;
             }
 
+        }
+        #endregion
+
+        #region search
+        private async void AppBarButtonRun_Click(object sender, RoutedEventArgs e)
+        {
+            string commandTxt = string.IsNullOrEmpty(txtBoxCommand.SelectedText) ? txtBoxCommand.Text.Trim() : txtBoxCommand.SelectedText;
+            if (string.IsNullOrEmpty(commandTxt) == false)
+            {
+                string[] arrCommandTxt = commandTxt.Split(new char[] { '{' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                if (arrCommandTxt.Length == 1)
+                {
+                    string[] arr1 = arrCommandTxt[0].ToString().Split(' ');
+                    if (arr1.Length == 2)
+                    {
+                        string method = arr1[0].Trim();
+                        string command = arr1[1].Trim();
+                        ShowResult(await EsService.RunJson(esdata.EsConnInfo, method, command));
+                    }
+                }
+                else if (arrCommandTxt.Length == 2)  //带{}的命令
+                {
+                    string[] arr1 = arrCommandTxt[0].ToString().Split(' ');
+                    if (arr1.Length == 2)
+                    {
+                        string method = arr1[0].Trim();
+                        string command = arr1[1].Trim().Trim('/');
+                        string json = "{" + arrCommandTxt[1].Trim();
+                        string result = await EsService.RunJson(esdata.EsConnInfo, method, command, json);
+                        ShowResult(result);
+                    }
+                }
+            }
+        }
+
+        private void ShowResult(string result)
+        {
+            try
+            {
+                JObject jobject = JObject.Parse(result);
+                if (jobject != null)
+                {
+                    txtBoxResult.Text = jobject.ToString();
+                }
+                else
+                {
+                    txtBoxResult.Text = result;
+                }
+            }
+            catch
+            {
+                txtBoxResult.Text = result;
+            }
+        }
+
+        private void AppBarButtonAutoIndent_Click(object sender, RoutedEventArgs e)
+        {
+            string selTxt = txtBoxCommand.SelectedText;
+            if (string.IsNullOrEmpty(selTxt) == false)
+            {
+                string[] arrCommandTxt = selTxt.Split(new char[] { '{' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                if (arrCommandTxt.Length == 2)
+                {
+                    try
+                    {
+                        JObject jobject = JObject.Parse("{" + arrCommandTxt[1]);
+                        if (jobject != null)
+                        {
+                            txtBoxCommand.SelectedText = arrCommandTxt[0].Trim('\r') + "\r" + jobject.ToString();
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
         }
         #endregion
     }

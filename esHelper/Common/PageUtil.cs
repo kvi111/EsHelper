@@ -24,7 +24,9 @@ namespace esHelper.Common
         public static void ShowMsg(string message)
         {
             SetDefaultCursor();
-            (new MessageDialog(message)).ShowAsync();
+            MessageDialog mdialog = new MessageDialog(message);
+            //UICommand command = mdialog.Commands[(int)mdialog.DefaultCommandIndex] as UICommand;
+            mdialog.ShowAsync();
         }
     }
 }

@@ -15,7 +15,7 @@
 
     <Grid>
         <!--<ScrollViewer>-->
-            <TextBox Name="tbMultiLine" TextWrapping="Wrap" AcceptsReturn="True" Height="600" Width="450" ScrollViewer.VerticalScrollBarVisibility="Visible">
+            <TextBox Name="tbMultiLine" BorderBrush="{ThemeResource my_Brush_Border}" BorderThickness="{ThemeResource my_Thickness_Controlborder}" TextWrapping="Wrap" AcceptsReturn="True" Height="600" Width="450" ScrollViewer.VerticalScrollBarVisibility="Visible">
             </TextBox>
         <!--</ScrollViewer>-->
     </Grid>

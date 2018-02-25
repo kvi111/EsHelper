@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using TreeViewControl;
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -56,6 +58,10 @@ namespace esHelper
             //sampleTreeView.RootNode.Add(personalFolder);
 
             //sampleTreeView.ContainerContentChanging += SampleTreeView_ContainerContentChanging;
+
+            //UISettings uis = new UISettings();
+            //Color bg = uis.GetColorValue(UIColorType.Accent);
+            //sampleTreeView.Background = new Windows.UI.Xaml.Media.SolidColorBrush() { Color = bg };
         }
 
         private void SampleTreeView_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
@@ -150,7 +156,7 @@ namespace esHelper
 
         private void AddButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            ContentDialog1 cd1 = new ContentDialog1();
+            ContentDialog_Connection cd1 = new ContentDialog_Connection();
             cd1.ShowAsync().GetResults();
             if (cd1.isSuccess && cd1.connInfo != null)
             {
@@ -248,7 +254,7 @@ namespace esHelper
         }
         private async void Menu_Create_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            ContentDialog1 cd1 = new ContentDialog1();
+            ContentDialog_Connection cd1 = new ContentDialog_Connection();
             await cd1.ShowAsync();
             if (cd1.isSuccess)
             {

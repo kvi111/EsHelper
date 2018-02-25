@@ -10,14 +10,18 @@ using Windows.UI.Xaml.Controls;
 
 namespace esHelper
 {
-    public sealed partial class ContentDialog1 : ContentDialog
+    public sealed partial class ContentDialog_Connection : ContentDialog
     {
         public bool isSuccess = false;
         public EsConnectionInfo connInfo;
 
-        public ContentDialog1()
+        public ContentDialog_Connection()
         {
             this.InitializeComponent();
+
+            Style buttonStyle = (Style)Application.Current.Resources["ButtonStyleNormal"];
+            PrimaryButtonStyle = buttonStyle;
+            SecondaryButtonStyle = buttonStyle;
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

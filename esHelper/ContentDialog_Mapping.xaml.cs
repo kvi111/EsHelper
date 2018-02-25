@@ -24,6 +24,10 @@ namespace esHelper
         {
             this.InitializeComponent();
             tbMultiLine.Text = text;
+
+            Style buttonStyle = (Style)Application.Current.Resources["ButtonStyleNormal"];
+            PrimaryButtonStyle = buttonStyle;
+            SecondaryButtonStyle = buttonStyle;
         }
 
         private void ContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

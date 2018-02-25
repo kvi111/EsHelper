@@ -426,5 +426,29 @@ namespace esHelper.Common
                 return false;
             }
         }
+        public static async Task<string> RunJson(EsConnectionInfo connInfo, String method, String command, String json = "")
+        {
+            string url = connInfo.GetLastUrl() + "/" + command;
+            switch (method.ToLower())
+            {
+                case "get":
+                    if (string.IsNullOrEmpty(json) == false)
+                    {
+                        return await HttpUtil.PostURL(url, connInfo.esUsername, connInfo.esPassword, json);
+                    }
+                    return await HttpUtil.GetURL(url, connInfo.esUsername, connInfo.esPassword);
+                    break;
+                case "put":
+                    return await HttpUtil.PutURL(url, json, connInfo.esUsername, connInfo.esPassword);
+                    break;
+                case "post":
+                    return await HttpUtil.PostURL(url, json, connInfo.esUsername, connInfo.esPassword);
+                    break;
+                case "delete":
+                    return await HttpUtil.DeleteURL(url, connInfo.esUsername, connInfo.esPassword);
+                    break;
+            }
+            return "";
+        }
     }
 }

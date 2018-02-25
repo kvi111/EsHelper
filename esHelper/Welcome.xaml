@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
-        <Grid Background="#f5f5f5">
+        <Grid Background="{ThemeResource my_Brush_ContentBackground}">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,-400,0,0">
                 <TextBlock  HorizontalAlignment="Center" FontSize="25" Foreground="DarkGray">
                     ElasticSearch Helper 1.1
