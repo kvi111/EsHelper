@@ -36,32 +36,20 @@ namespace esHelper
             sampleTreeView.DoubleTapped += SampleTreeView_DoubleTapped;
 
             contentFrame.Navigate(typeof(Welcome), null);
+        }
 
-            //TreeNode workFolder = CreateFolderNode("Work Documents");
-            //workFolder.Add(CreateFileNode("Feature Functional Spec"));
-            //workFolder.Add(CreateFileNode("Feature Schedule"));
-            //workFolder.Add(CreateFileNode("Overall Project Plan"));
-            //workFolder.Add(CreateFileNode("Feature Resource allocation"));
-            //sampleTreeView.RootNode.Add(workFolder);
+        private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Menu_Refresh_Click(sender, e);
+        }
 
-            //TreeNode remodelFolder = CreateFolderNode("Home Remodel");
-            //remodelFolder.IsExpanded = true;
-            //remodelFolder.Add(CreateFileNode("Contactor Contact Information"));
-            //remodelFolder.Add(CreateFileNode("Paint Color Scheme"));
-            //remodelFolder.Add(CreateFileNode("Flooring woodgrain types"));
-            //remodelFolder.Add(CreateFileNode("Kitchen cabinet styles"));
-
-            //TreeNode personalFolder = CreateFolderNode("Personal Documents");
-            //personalFolder.IsExpanded = true;
-            //personalFolder.Add(remodelFolder);
-
-            //sampleTreeView.RootNode.Add(personalFolder);
-
-            //sampleTreeView.ContainerContentChanging += SampleTreeView_ContainerContentChanging;
-
-            //UISettings uis = new UISettings();
-            //Color bg = uis.GetColorValue(UIColorType.Accent);
-            //sampleTreeView.Background = new Windows.UI.Xaml.Media.SolidColorBrush() { Color = bg };
+        private void Page_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            //if (sshClient.IsConnected)
+            //{
+            //    sshClient.Disconnect();
+            //    sshClient.Dispose();
+            //}
         }
 
         private void SampleTreeView_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
@@ -88,6 +76,16 @@ namespace esHelper
                 EsSystemData data = lastTreeNode.Data as EsSystemData;
                 if (data != null && data.ItemType == EsTreeItemType.esConnection)
                 {
+                    if (data.IsConnect)
+                    {
+                        Menu_Open.IsEnabled = false;
+                        Menu_Close.IsEnabled = true;
+                    }
+                    else
+                    {
+                        Menu_Open.IsEnabled = true;
+                        Menu_Close.IsEnabled = false;
+                    }
                     ItemMenuFlyout.ShowAt(sampleTreeView, e.GetPosition(sampleTreeView));
                 }
             }
@@ -101,7 +99,7 @@ namespace esHelper
         private void SampleTreeView_TreeViewItemClick(TreeView sender, TreeViewItemClickEventArgs args)
         {
             TreeNode node = (TreeNode)args.ClickedItem;
-            
+
             EsSystemData data = node.Data as EsSystemData;
             switch (data.ItemType)
             {
@@ -141,20 +139,6 @@ namespace esHelper
             TreeNode obj = (TreeNode)sampleTreeView.SelectedItem;
             obj.IsExpanded = !obj.IsExpanded;
             //contentFrame.Navigate(typeof(BlankPage1), e);
-        }
-
-        private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            Menu_Refresh_Click(sender, e);
-        }
-
-        private void Page_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            //if (sshClient.IsConnected)
-            //{
-            //    sshClient.Disconnect();
-            //    sshClient.Dispose();
-            //}
         }
 
         private void AddButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -205,7 +189,6 @@ namespace esHelper
                         if (esSD.SSHClient == null || esSD.SSHClient.IsConnected == false)
                         {
                             esSD.SSHClient = EsService.GetSshClient(esSD.EsConnInfo);
-
                         }
                     }
 
@@ -215,7 +198,12 @@ namespace esHelper
                         //(new MessageDialog("连接失败！")).ShowAsync();
                         return;
                     }
-
+                    (lastTreeNode.Data as EsSystemData).IsConnect = true;
+                    lastTreeNode.Data = esSD;
+                    if (lastTreeNode.IsExpanded == false)
+                    {
+                        lastTreeNode.IsExpanded = true;
+                    }
                     AddTreeNodeChild(lastTreeNode);
                 }
                 PageUtil.SetDefaultCursor();
@@ -234,6 +222,7 @@ namespace esHelper
             tn.Add(new TreeNode() { Data = new EsSystemData("Index", EsTreeItemType.esIndex) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Template", EsTreeItemType.esTemplate) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Plugin", EsTreeItemType.esPlugin) });
+            
             //tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
             //tn.IsExpanded = true;
         }
@@ -249,6 +238,9 @@ namespace esHelper
                     esSD.SSHClient.Dispose();
                     esSD.SSHClient = null;
                 }
+                //(lastTreeNode.Data as EsSystemData).IsConnect = false;
+                esSD.IsConnect = false;
+                lastTreeNode.Data = esSD;
                 lastTreeNode.IsExpanded = false;
                 lastTreeNode.Clear();
 
@@ -274,7 +266,7 @@ namespace esHelper
 
         private async void Menu_Delete_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            var dialog = new MessageDialog("Are you delete this connection?");
+            var dialog = new MessageDialog("Are you sure to delete this connection?");
 
             dialog.Commands.Add(new UICommand("ok", cmd => { }, commandId: 0));
             dialog.Commands.Add(new UICommand("cancel", cmd => { }, commandId: 1));

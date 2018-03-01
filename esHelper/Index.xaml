@@ -61,7 +61,7 @@
                         </AppBarButton>
                         <!--<AppBarButton Icon="Add" Label="add index" Click="AppBarButtonAdd_Click" IsCompact="True"/>-->
                         <!--<AppBarButton Icon="Refresh" Label="refresh" Click="ToggleSwitch_Toggled" IsCompact="True"/>-->
-                        <AppBarSeparator Visibility="Collapsed"/>
+                        <!--<AppBarSeparator Visibility="Collapsed"/>
                         <ToggleSwitch Name="ToggleSwitch1" IsOn="False" Toggled="ToggleSwitch_Toggled" HorizontalContentAlignment="Right"  HorizontalAlignment="Right" Visibility="Collapsed">
                             <ToggleSwitch.OffContent>
                                 <TextBlock Text="don't show sys index" />
@@ -69,7 +69,7 @@
                             <ToggleSwitch.OnContent>
                                 <TextBlock Text="show sys index" />
                             </ToggleSwitch.OnContent>
-                        </ToggleSwitch>
+                        </ToggleSwitch>-->
                     </StackPanel>
                     <ScrollViewer Margin="0,10,0,0" Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
                         <StackPanel  Orientation="Vertical">
@@ -135,7 +135,7 @@
                                 <ToolTip Content="run" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                             </ToolTipService.ToolTip>
                         </AppBarButton>
-                        <Button Style="{ThemeResource IconButtonStyle}"></Button>
+                        <!--<Button Style="{ThemeResource IconButtonStyle}" Click="Button_Click"></Button>-->
                         <AppBarButton Height="35" Width="35" Margin="20,0,0,0" Click="AppBarButtonAutoIndent_Click">
                             <AppBarButton.Icon>
                                 <SymbolIcon Margin="0,-10,0,0" Symbol="AlignLeft"/>

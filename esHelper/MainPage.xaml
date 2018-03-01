@@ -11,17 +11,18 @@
     <Page.Resources>
         <MenuFlyout x:Name="BlankMenuFlyout">
             <!--<MenuFlyoutItem Name="Menu_Create" Text="新建连接" Click="MenuFlyout_Click"/>-->
-            <MenuFlyoutItem Name="Menu_Refresh" Text="刷新" Click="Menu_Refresh_Click"/>
+            <MenuFlyoutItem Name="Menu_Refresh" Text="Refresh" Click="Menu_Refresh_Click"/>
         </MenuFlyout>
         <MenuFlyout x:Key="TreeViewMenuFlyout" x:Name="ItemMenuFlyout">
-            <MenuFlyoutItem Name="Menu_Open" Text="打开连接" Click="Menu_Open_Click"/>
-            <MenuFlyoutItem Name="Menu_Close" Text="关闭连接" Click="Menu_Close_Click"/>
+            <MenuFlyoutItem Name="Menu_Open" Text="open" Click="Menu_Open_Click"/>
+            <MenuFlyoutItem Name="Menu_Close" Text="close" Click="Menu_Close_Click"/>
             <MenuFlyoutSeparator></MenuFlyoutSeparator>
-            <MenuFlyoutItem Name="Menu_Create" Text="新建连接" Click="Menu_Create_Click"/>
-            <MenuFlyoutItem Name="Menu_Edit" Text="编辑连接" Click="Menu_Edit_Click"/>
-            <MenuFlyoutItem Name="Menu_Delete" Text="删除连接" Click="Menu_Delete_Click"/>
+            <MenuFlyoutItem Name="Menu_Create" Text="new" Click="Menu_Create_Click"/>
+            <!--<MenuFlyoutItem Name="Menu_Edit" Text="编辑连接" Click="Menu_Edit_Click"/>-->
+            <MenuFlyoutItem Name="Menu_Delete" Text="delete" Click="Menu_Delete_Click"/>
         </MenuFlyout>
         <tvs:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
+        <cvt:NodeExpendIconStateConverter x:Key="nodeExpendIconConverter" OpenImage="Assets/icon/open.png" CloseImage="Assets/icon/close.png" />
         <cvt:GlyphConverter x:Key="folderGlyphConverter" ExpandedGlyph="&#xED44;" CollapsedGlyph="&#xED42;" />
         <cvt:GlyphConverter x:Key="folderOutlineGlyphConverter" ExpandedGlyph="&#xED43;" CollapsedGlyph="&#xED41;" />
         <cvt:GlyphConverter x:Key="expandCollapseGlyphConverter" ExpandedGlyph="&#xE70D;" CollapsedGlyph="&#xE76C;"/>
@@ -35,35 +36,44 @@
                           Glyph="{Binding IsExpanded, Converter={StaticResource expandCollapseGlyphConverter}}"
                           Visibility="{Binding Data.IsFolder, Converter={StaticResource booleanToVisibilityConverter}}"                           
                           FontSize="12"
-                          Margin="12,8,12,8" 
+                          Margin="12,8,12,8"
                           FontFamily="Segoe MDL2 Assets" Tapped="ExpandCollapseIcon_Tapped" />
                 <Grid>
-                    <FontIcon x:Name ="expandCollapseFolder" 
+                    <!--<FontIcon x:Name ="expandCollapseFolder" 
                               Glyph="{Binding IsExpanded, Converter={StaticResource folderGlyphConverter}}" 
                               Foreground="#FFFFE793" 
                               FontSize="16" 
                               Margin="0,8,12,8" 
                               FontFamily="Segoe MDL2 Assets"
                               Visibility="{Binding Data.IsFolder, Converter={StaticResource booleanToVisibilityConverter}}"
-                              />
+                              />-->
+                    <Image x:Name ="expandCollapseFolder"
+                           Margin="0,8,12,8"
+                           Source="{Binding Data.IsConnect,Converter={StaticResource nodeExpendIconConverter}}"
+                           Visibility="{Binding Data.IsFolder, Converter={StaticResource booleanToVisibilityConverter}}"
+                           />
 
                     <FontIcon x:Name ="nonFolderIcon" 
                               Glyph="&#xE160;"
-                              Foreground="{ThemeResource SystemControlForegroundBaseLowBrush}"
+                              Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"
                               FontSize="12" 
                               Margin="20,8,12,8" 
                               FontFamily="Segoe MDL2 Assets"
-                              
                               Visibility="{Binding Data.IsFolder, Converter={StaticResource inverseBooleanToVisibilityConverter}}"
                               />
 
-                    <FontIcon x:Name ="expandCollapseFolderOutline" 
+                    <!--<FontIcon x:Name ="expandCollapseFolderOutline" 
                               Glyph="{Binding IsExpanded, Converter={StaticResource folderOutlineGlyphConverter}}" 
                               Foreground="#FFECC849" 
                               FontSize="16" 
                               Margin="0,8,12,8" 
                               FontFamily="Segoe MDL2 Assets"
-                              Visibility="{Binding Data.IsFolder, Converter={StaticResource booleanToVisibilityConverter}}"/>
+                              Visibility="{Binding Data.IsFolder, Converter={StaticResource booleanToVisibilityConverter}}"/>-->
+                    <Image x:Name ="expandCollapseFolderOutline"
+                           Source="{Binding Data.IsConnect,Converter={StaticResource nodeExpendIconConverter}}"
+                           Margin="0,8,12,8"
+                           Visibility="{Binding Data.IsFolder, Converter={StaticResource booleanToVisibilityConverter}}"
+                    />
                 </Grid>
 
                 <TextBlock Text="{Binding Data.Name}" 
@@ -91,32 +101,6 @@
             <AppBarSeparator/>
             <AppBarButton Icon="Help" Label="help" Click="Menu_Help_Click"/>
         </StackPanel>
-        <!--<CommandBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" CompositeMode="SourceOver" Background="#f0f0f0">
-            <AppBarToggleButton Icon="Add" Label="Add" Tapped="Menu_Create_Click" Margin="0,0,0,0" />
-            <AppBarToggleButton Icon="RepeatAll" Label="Repeat" Click="Menu_Create_Click"/>
-            <AppBarSeparator/>
-            <AppBarButton Icon="Back" Label="Back" Click="Menu_Create_Click">
-                <AppBarButton.Flyout>
-                    <MenuFlyout>
-                        <MenuFlyoutItem Text="Reset" Click="Menu_Create_Click"/>
-                        <MenuFlyoutItem Text="Reset11" Click="Menu_Create_Click"/>
-                    </MenuFlyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-            <AppBarButton Icon="Stop" Label="Stop" Click="Menu_Create_Click"/>
-            <AppBarButton Icon="Play" Label="Play" Click="Menu_Create_Click"/>
-            <AppBarButton Icon="Forward" Label="Forward" Click="Menu_Create_Click"/>
-            <AppBarSeparator/>
-            --><!--<CommandBar.SecondaryCommands>
-                <AppBarButton Icon="Like" Label="Like" Click="Button_Click"/>
-                <AppBarButton Icon="Dislike" Label="Dislike" Click="Button_Click"/>
-            </CommandBar.SecondaryCommands>--><!--
-
-            <CommandBar.Content>
-                <TextBlock Text="Now playing..." Margin="12,14" Width="100"/>
-            </CommandBar.Content>
-        </CommandBar>-->
-        <!--FlyoutBase.AttachedFlyout="{StaticResource TreeViewMenuFlyout}"-->
         <tvs:TreeView x:Name="sampleTreeView" 
                       Grid.Row="1" Grid.Column="0"
                       BorderBrush="{ThemeResource SystemControlForegroundBaseHighBrush}"

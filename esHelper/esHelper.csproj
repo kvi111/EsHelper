@@ -102,6 +102,7 @@
     <Compile Include="Common\ListViewItemStyleSelector.cs" />
     <Compile Include="Common\PageUtil.cs" />
     <Compile Include="Common\SubListView.cs" />
+    <Compile Include="Converter\NodeExpendIconStateConverter.cs" />
     <Compile Include="Converter\StringTxtTrimDotConverter.cs" />
     <Compile Include="Converter\PivotIsShowCloseButtonConverter.cs" />
     <Compile Include="Converter\ShowBrowseConverter.cs" />
@@ -156,6 +157,8 @@
   <ItemGroup>
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Assets\close.png" />
+    <Content Include="Assets\icon\close.png" />
+    <Content Include="Assets\icon\open.png" />
     <Content Include="Assets\new\LargeTile.scale-100.png" />
     <Content Include="Assets\new\LargeTile.scale-125.png" />
     <Content Include="Assets\new\LargeTile.scale-150.png" />

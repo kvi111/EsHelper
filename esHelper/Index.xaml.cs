@@ -32,10 +32,6 @@ namespace esHelper
         public Index()
         {
             this.InitializeComponent();
-
-            //pivot1.Items.Add(new PivotItem() { Header = "111" });
-            //PivotItem pi = pivot1.Items[0] as PivotItem;
-            //pivot1.Items.RemoveAt(1);
         }
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -45,6 +41,21 @@ namespace esHelper
             esdata = e.Parameter as EsSystemData;
 
             await InitData(false);
+        }
+
+        private void ImageClose_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            Image img = e.OriginalSource as Image;
+            string itemHeaderName = img.Tag as string;
+            int index = 0;
+            foreach (PivotItem pi in pivot1.Items)
+            {
+                if (itemHeaderName == pi.Header.ToString())
+                {
+                    pivot1.Items.RemoveAt(index);
+                }
+                index++;
+            }
         }
 
         #region index
@@ -93,7 +104,7 @@ namespace esHelper
 
         private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            await InitData(ToggleSwitch1.IsOn);
+            await InitData(false);  //ToggleSwitch1.IsOn
         }
 
         private async void HyperlinkButtonBrowse_Click(object sender, RoutedEventArgs e)
@@ -275,21 +286,6 @@ namespace esHelper
             }
         }
         #endregion
-
-        private void ImageClose_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
-        {
-            Image img = e.OriginalSource as Image;
-            string itemHeaderName = img.Tag as string;
-            int index = 0;
-            foreach (PivotItem pi in pivot1.Items)
-            {
-                if (itemHeaderName == pi.Header.ToString())
-                {
-                    pivot1.Items.RemoveAt(index);
-                }
-                index++;
-            }
-        }
 
         #region senior search
 

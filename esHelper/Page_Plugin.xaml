@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock Name="txtBlock1"></TextBlock>
+    <Grid Background="{ThemeResource my_Brush_ContentBackground}">
+        <TextBlock Name="txtBlock1" Margin="10,10,0,0"></TextBlock>
     </Grid>
 </Page>
