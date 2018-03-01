@@ -10,10 +10,10 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
         <Grid Background="{ThemeResource my_Brush_ContentBackground}">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,-400,0,0">
-                <TextBlock  HorizontalAlignment="Center" FontSize="25" Foreground="DarkGray">
+                <TextBlock  HorizontalAlignment="Center" FontSize="25" Foreground="{ThemeResource my_Brush_WelcomeFont}">
                     ElasticSearch Helper 1.1
                 </TextBlock>
-                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15" Foreground="DarkGray" Margin="0,20,0,0">
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="15" Foreground="{ThemeResource my_Brush_WelcomeFont}" Margin="0,20,0,0">
                     Supported ElasticSearch version: above ElasticSearch 5
                 </TextBlock>
             </StackPanel>

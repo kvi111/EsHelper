@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TreeViewControl;
@@ -24,9 +26,9 @@ namespace esHelper
     {
         SortedSet<string> indexNameSet = new SortedSet<string>();
         EsSystemData esdata;
-        int pageIndex = 0;
-        int totalPageCount = 0;
-        string indexName = "";
+
+        Brush background1 = Application.Current.Resources["my_Brush_ListViewItem_Background1"] as SolidColorBrush;
+        Brush background2 = Application.Current.Resources["my_Brush_ListViewItem_Background2"] as SolidColorBrush;
         public Index()
         {
             this.InitializeComponent();
@@ -35,19 +37,17 @@ namespace esHelper
             //PivotItem pi = pivot1.Items[0] as PivotItem;
             //pivot1.Items.RemoveAt(1);
         }
-
-        #region index
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             if (e.Parameter == null) return;
-            TreeViewItemClickEventArgs args = e.Parameter as TreeViewItemClickEventArgs;
-            TreeNode node = args.ClickedItem as TreeNode;
-            esdata = node.ParentNode.Data as EsSystemData;
+
+            esdata = e.Parameter as EsSystemData;
 
             await InitData(false);
         }
 
+        #region index
         private async Task InitData(bool isShowSysIndex)
         {
             listview1.ItemsSource = null;
@@ -87,6 +87,8 @@ namespace esHelper
             }
 
             listview1.ItemsSource = listIndex;
+            comboxIndex.ItemsSource = listIndex;
+            comboxIndex.SelectedIndex = 0;
         }
 
         private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
@@ -94,94 +96,33 @@ namespace esHelper
             await InitData(ToggleSwitch1.IsOn);
         }
 
-        int rowIndex = 0;
         private async void HyperlinkButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
-            pageIndex = 0;
-            totalPageCount = 0;
             HyperlinkButton btn = sender as HyperlinkButton;
-            indexName = btn.CommandParameter.ToString();
-            await GetBrowsePageData(indexName, pageIndex);
+            string indexName = btn.CommandParameter.ToString();
+            AddPivotItem(typeof(Page_BrowData), indexName);
         }
 
-        private async Task GetBrowsePageData(string indexName, int pIndex)
+        /// <summary>
+        /// 添加一个新的item，并且加载对应的页面,并且切换过去
+        /// </summary>
+        /// <param name="sourcePageType"></param>
+        /// <param name="indexName"></param>
+        private void AddPivotItem(Type sourcePageType, string indexName)
         {
-            PerPageData perPageData = await EsService.GetIndexData(esdata.EsConnInfo, indexName, pIndex);
-            pageIndex = perPageData.pageIndex;
-            totalPageCount = perPageData.totalPageCount;
-            textBlockPageIndex.Text = (perPageData.pageIndex + 1).ToString();
-            textBlockTotalPageCount.Text = perPageData.totalPageCount.ToString();
-            pivot1.SelectedIndex = 1;
+            PivotItem pi = new PivotItem() { Header = indexName + "$" + Guid.NewGuid().ToString() };
 
-            rowIndex = 0;
-            gridData.ColumnSpacing = 2;
-            gridData.RowSpacing = 5;
-            gridData.Children.Clear();
-            gridData.RowDefinitions.Clear();
-            gridData.ColumnDefinitions.Clear();
-            if (perPageData != null)
-            {
-                JObject jObject = perPageData.pageData as JObject;
-                JArray arrData = jObject.Root["hits"]["hits"] as JArray;
-                if (arrData.Count > 0)
-                {
+            Frame frame = new Frame();
+            //frame.Background = new SolidColorBrush() { Color = Colors.AliceBlue };
+            pi.Content = frame;
+            frame.Tag = esdata;
+            frame.Navigate(sourcePageType, indexName);
 
-                    gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行, 存放标题栏
-                    foreach (JObject jObj in arrData) //行
-                    {
-                        gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行
-                        GetAllProperty(jObj, 0);
-                        rowIndex++;
-                    }
-                    gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30) }); //添加一行
-                }
-            }
+            pivot1.Items.Add(pi);
+            pivot1.SelectedIndex = pivot1.Items.Count - 1;
         }
 
-        private void GetAllProperty(JObject jObject, int columnIndex)
-        {
-            foreach (JProperty jpro in jObject.Properties())
-            {
-                if (jpro.Value is JValue)
-                {
-                    if (rowIndex == 0) //存标题
-                    {
-                        gridData.ColumnDefinitions.Add(new ColumnDefinition() { MinWidth = 100, MaxWidth = 300 }); //添加一列
 
-                        Border border = new Border();
-                        //border.BorderThickness = 1;
-                        border.Background = new SolidColorBrush(Colors.AliceBlue);
-
-                        TextBlock tb = new TextBlock();
-                        tb.Text = jpro.Name;
-                        tb.IsTextSelectionEnabled = true;
-                        tb.FontSize = tb.FontSize + 2;
-                        tb.HorizontalAlignment = HorizontalAlignment.Center;
-                        tb.VerticalAlignment = VerticalAlignment.Center;
-
-                        border.Child = tb;
-
-                        gridData.Children.Add(border);
-                        Grid.SetColumn(border, columnIndex);
-                        Grid.SetRow(border, rowIndex);
-                    }
-
-                    TextBlock tb1 = new TextBlock();
-                    tb1.Text = jpro.Value.ToString();
-                    tb1.IsTextSelectionEnabled = true;
-
-                    gridData.Children.Add(tb1);
-                    Grid.SetColumn(tb1, columnIndex);
-                    Grid.SetRow(tb1, rowIndex + 1);
-
-                    columnIndex++;
-                }
-                else if (jpro.Value is JObject)
-                {
-                    GetAllProperty((JObject)jpro.Value, columnIndex);
-                }
-            }
-        }
 
         private async void HyperlinkButtonMapping_Click(object sender, RoutedEventArgs e)
         {
@@ -221,7 +162,7 @@ namespace esHelper
         }
         private async void HyperlinkButtonDelete_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new MessageDialog("are you sure delete this index?");
+            var dialog = new MessageDialog("are you sure to delete this index?");
 
             dialog.Commands.Add(new UICommand("ok", cmd => { }, commandId: 0));
             dialog.Commands.Add(new UICommand("cancel", cmd => { }, commandId: 1));
@@ -255,65 +196,6 @@ namespace esHelper
             {
                 ToggleSwitch_Toggled(sender, e); //重新加载索引列表
             }
-        }
-        #endregion
-
-        #region browse
-        private async void AppBarButtonFirst_Click(object sender, RoutedEventArgs e)
-        {
-            if (pageIndex != 0)
-            {
-                pageIndex = 0;
-                await GetBrowsePageData(indexName, pageIndex);
-            }
-        }
-        private async void AppBarButtonPrevious_Click(object sender, RoutedEventArgs e)
-        {
-            if (pageIndex > 0)
-            {
-                pageIndex--;
-                await GetBrowsePageData(indexName, pageIndex);
-            }
-        }
-        private async void AppBarButtonNext_Click(object sender, RoutedEventArgs e)
-        {
-            if ((pageIndex + 1) <= (totalPageCount - 1))
-            {
-                pageIndex++;
-                await GetBrowsePageData(indexName, pageIndex);
-            }
-        }
-        private async void AppBarButtonLast_Click(object sender, RoutedEventArgs e)
-        {
-            if ((totalPageCount - 1) >= 0 && pageIndex != (totalPageCount - 1))
-            {
-                await GetBrowsePageData(indexName, totalPageCount - 1);
-            }
-        }
-
-
-        private async void ButtonGO_Click(object sender, RoutedEventArgs e)
-        {
-            int goPageIndex = 1;
-            if (int.TryParse(textBoxPageIndex.Text, out goPageIndex))
-            {
-                if (goPageIndex > 0 && goPageIndex < totalPageCount)
-                {
-                    await GetBrowsePageData(indexName, goPageIndex - 1);
-                }
-            }
-        }
-
-        private void Textbox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var textbox = (TextBox)sender;
-            if (!Regex.IsMatch(textbox.Text, "^\\d*\\.?\\d*$") && textbox.Text != "")
-            {
-                int pos = textbox.SelectionStart - 1;
-                textbox.Text = textbox.Text.Remove(pos, 1);
-                textbox.SelectionStart = pos;
-            }
-
         }
         #endregion
 
@@ -391,6 +273,84 @@ namespace esHelper
                     }
                 }
             }
+        }
+        #endregion
+
+        private void ImageClose_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            Image img = e.OriginalSource as Image;
+            string itemHeaderName = img.Tag as string;
+            int index = 0;
+            foreach (PivotItem pi in pivot1.Items)
+            {
+                if (itemHeaderName == pi.Header.ToString())
+                {
+                    pivot1.Items.RemoveAt(index);
+                }
+                index++;
+            }
+        }
+
+        #region senior search
+
+        private async void comboxIndex_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            EsIndex esIndex = comboxIndex.SelectedItem as EsIndex;
+
+            if (esIndex != null)
+            {
+                JObject jObject = await EsService.GetIndexMapping(esdata.EsConnInfo, esIndex.Name);
+                List<string> list = new List<string>();
+                EsService.GetFieldsByJson(jObject, esIndex.Name, list);
+                comboxField.Items.Clear();
+                foreach (string str in list)
+                {
+                    comboxField.Items.Add(new ComboBoxItem() { Content = str });
+                }
+            }
+        }
+
+        private void comboxMust_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void comboxField_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void ButtonAdd_Click(object sender, RoutedEventArgs e)
+        {
+            StackPanel sp0 = new StackPanel();
+            sp0.Orientation = Orientation.Horizontal;
+
+            ComboBox comboBoxMust0 = new ComboBox();
+            comboBoxMust0.BorderThickness = new Thickness(0.2);
+            comboBoxMust0.Margin = new Thickness(80, 0, 0, 0);
+            comboBoxMust0.Width = 110;
+            foreach (ComboBoxItem item in comboxMust.Items)
+            {
+                comboBoxMust0.Items.Add(new ComboBoxItem() { Content = item.Content == null ? "" : item.Content, IsSelected = item.IsSelected });
+            }
+            sp0.Children.Add(comboBoxMust0);
+
+            ComboBox comboxField0 = new ComboBox();
+            comboxField0.BorderThickness = new Thickness(0.2);
+            //comboxField0.Margin = new Thickness(0, 0, 0, 0);
+            comboxField0.Width = 110;
+            foreach (ComboBoxItem item in comboxField.Items)
+            {
+                comboxField0.Items.Add(new ComboBoxItem() { Content = item.Content == null ? "" : item.Content, IsSelected = item.IsSelected });
+            }
+            sp0.Children.Add(comboxField0);
+
+            spContent.Children.Add(sp0);
+        }
+
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e)
+        {
+
         }
         #endregion
     }

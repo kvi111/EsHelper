@@ -1,0 +1,65 @@
+﻿<Page
+    x:Class="esHelper.Page_BrowData"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:esHelper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel Orientation="Vertical" Height="AUTO">
+            <ScrollViewer Name="scrollView" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <Grid Name="gridData" BorderBrush="{ThemeResource my_Brush_ListView_Border}" BorderThickness="{ThemeResource my_Thickness_ListView_Border}" Background="{ThemeResource my_Brush_ListView_Background}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="AUTO"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="AUTO"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal" Height="35">
+                <AppBarButton Height="35" Width="35" Name="AppBarButtonFirst" Click="AppBarButtonFirst_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Previous"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="first page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <AppBarButton Height="35" Width="35" Name="AppBarButtonPrevious" Click="AppBarButtonPrevious_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Back"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="previous page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <TextBlock Height="35" Width="35" Name="textBlockPageIndex" Text="1" TextAlignment="Center" Margin="10,7,0,0"/>
+                <TextBlock Height="35" Width="35" Text="of" TextAlignment="Center" Margin="10,7,0,0"/>
+                <TextBlock Height="35" Width="35" Name="textBlockTotalPageCount" Text="100" TextAlignment="Center" Margin="10,7,0,10"/>
+                <AppBarButton Height="35" Width="35" Name="AppBarButtonNext" Click="AppBarButtonNext_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Forward"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="next page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+                <AppBarButton Height="35" Width="35" Name="AppBarButtonLast" Click="AppBarButtonLast_Click">
+                    <AppBarButton.Icon>
+                        <SymbolIcon Margin="0,-10,0,0" Symbol="Next"/>
+                    </AppBarButton.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="last page" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                    </ToolTipService.ToolTip>
+                </AppBarButton>
+
+                <TextBlock Height="35" Width="35" Text="page" TextAlignment="Center" Margin="100,7,0,0"/>
+                <TextBox Height="25" Width="35" Name="textBoxPageIndex" Text="1" TextAlignment="Center" BorderThickness="0" InputScope="Number" VerticalAlignment="Bottom" TextChanged="Textbox_TextChanged"/>
+                <Button Content="GO" Height="30" BorderThickness="1" Background="Transparent" Click="ButtonGO_Click" Style="{ThemeResource ButtonStyleNormal}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

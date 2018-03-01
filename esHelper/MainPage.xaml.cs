@@ -101,15 +101,18 @@ namespace esHelper
         private void SampleTreeView_TreeViewItemClick(TreeView sender, TreeViewItemClickEventArgs args)
         {
             TreeNode node = (TreeNode)args.ClickedItem;
+            
             EsSystemData data = node.Data as EsSystemData;
             switch (data.ItemType)
             {
                 case EsTreeItemType.esIndex:
-                    contentFrame.Navigate(typeof(Index), args);
+                    contentFrame.Navigate(typeof(Index), node.ParentNode.Data as EsSystemData);
                     break;
                 case EsTreeItemType.esTemplate:
+                    contentFrame.Navigate(typeof(Template), node.ParentNode.Data as EsSystemData);
                     break;
                 case EsTreeItemType.esPlugin:
+                    contentFrame.Navigate(typeof(Page_Plugin), node.ParentNode.Data as EsSystemData);
                     break;
                 case EsTreeItemType.esNode:
                     break;
@@ -231,7 +234,7 @@ namespace esHelper
             tn.Add(new TreeNode() { Data = new EsSystemData("Index", EsTreeItemType.esIndex) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Template", EsTreeItemType.esTemplate) });
             tn.Add(new TreeNode() { Data = new EsSystemData("Plugin", EsTreeItemType.esPlugin) });
-            tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
+            //tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
             //tn.IsExpanded = true;
         }
 

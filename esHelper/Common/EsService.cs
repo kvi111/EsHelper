@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using esHelper.Model;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Renci.SshNet;
 using System;
@@ -449,6 +450,148 @@ namespace esHelper.Common
                     break;
             }
             return "";
+        }
+        /// <summary>
+        /// 从json中得到
+        /// </summary>
+        /// <param name="jsonObj"></param>
+        /// <returns></returns>
+        public static void GetFieldsByJson(JObject jsonObj, string indexName, List<string> list)
+        {
+            if (jsonObj == null) return;
+
+            //var tokens = jsonObj.SelectTokens(indexName + ".mappings").Children();
+            //foreach (JToken jtoken in tokens)
+            //{
+            //    string typeName = ((JProperty)jtoken).Name;
+            //    JToken jk = ((JProperty)jtoken).Value;
+            //    var tokenFields = jk.SelectTokens("properties").Children();
+            //    foreach (JToken jtoken1 in tokenFields)
+            //    {
+            //        //string typeName1 = ((JProperty)jtoken1).Name;
+            //        list.Add(jtoken1.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
+            //    }
+            //    //JObject jObj = jtoken as JObject;
+            //    //foreach (JProperty jpro in jObj.Properties())
+            //    //{
+            //    //    if (jpro.Value is JValue)
+            //    //    {
+            //    //        //string aa = jpro.Path + jpro.Name;
+            //    //        //if (jpro.Path.Contains(".properties."))
+            //    //        {
+            //    //            list.Add(jpro.Path);
+            //    //        }
+            //    //    }
+            //    //    else if (jpro.Value is JObject)
+            //    //    {
+            //    //        //if (jpro.Path.Contains(".properties."))
+            //    //        {
+            //    //            list.Add(jpro.Path);
+            //    //        }
+            //    //        GetFieldsByJson((JObject)jpro.Value, indexName, list);
+            //    //    }
+            //    //}
+            //}
+            foreach (JProperty jpro in jsonObj.Properties())
+            {
+                if (jpro.Value is JValue)
+                {
+                    //string aa = jpro.Path + jpro.Name;
+                    if (jpro.Path.Contains(".properties."))
+                    {
+                        list.Add(jpro.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
+                    }
+                }
+                else if (jpro.Value is JObject)
+                {
+                    //if (jpro.Path.Contains(".properties."))
+                    //{
+                    //    list.Add(jpro.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
+                    //}
+                    //else
+                    //{
+                    //    GetFieldsByJson((JObject)jpro.Value, indexName, list);
+                    //}
+                    GetFieldsByJson((JObject)jpro.Value, indexName, list);
+                    //ISet<String> set = new SortedSet<String>();
+
+                }
+            }
+        }
+        /// <summary>
+        /// 获取所有索引模板
+        /// </summary>
+        /// <param name="connInfo"></param>
+        /// <returns></returns>
+        public static async Task<List<EsTemplate>> GetTemplate(EsConnectionInfo connInfo)
+        {
+            try
+            {
+                string result = await HttpUtil.GetURL(connInfo.GetLastUrl() + "/_template", connInfo.esUsername, connInfo.esPassword);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return null;
+                }
+                JObject jObj = JObject.Parse(result);
+                var jtokens = jObj.Children();
+                List<EsTemplate> list = new List<EsTemplate>();
+                foreach (JToken jt in jtokens)
+                {
+                    JToken jt1 = jt.First.SelectToken("index_patterns");
+                    string tempName = (jt as JProperty).Name;
+                    string indexName = jt1.First.Value<string>();
+                    if (indexName.StartsWith(".") == false)
+                    {
+                       list.Add(new EsTemplate() { Name = tempName, IndexName = indexName, Mapping = jt.First.SelectToken("mappings")});
+                    }
+                }
+                return list;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        /// <summary>
+        /// 删除模板
+        /// </summary>
+        /// <param name="connInfo"></param>
+        /// <param name="templateName"></param>
+        public static async Task<FuncResult> DeleteTemplate(EsConnectionInfo connInfo,string templateName)
+        {
+            FuncResult funcResult = new FuncResult();
+            try
+            {  
+                //DELETE _template/update-mapping-webindex.json?pretty
+                string result = await HttpUtil.DeleteURL(connInfo.GetLastUrl() + "/_template/"+ templateName + "?pretty", connInfo.esUsername, connInfo.esPassword);
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null)
+                {
+                    if (jObj.Root["acknowledged"] != null)
+                    {
+                        funcResult.Success = true;
+                        return funcResult;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                funcResult.Message = ex.Message;
+            }
+            return funcResult;
+        }
+
+        /// <summary>
+        /// 获取插件
+        /// </summary>
+        /// <param name="connInfo"></param>
+        /// <returns></returns>
+        public static async Task<string> GetPlugin(EsConnectionInfo connInfo)
+        {
+            //_cat/plugins
+            return await HttpUtil.GetURL(connInfo.GetLastUrl() + "/_cat/plugins", connInfo.esUsername, connInfo.esPassword);
         }
     }
 }
