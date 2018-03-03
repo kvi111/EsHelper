@@ -275,12 +275,13 @@ namespace esHelper.Common
         /// <param name="pageIndex">开始位置</param>
         /// <param name="pageCount">每页数量</param>
         /// <returns></returns>
-        public static async Task<PerPageData> GetIndexData(EsConnectionInfo connInfo, String indexName, int pageIndex = 0, int pageSize = 20)
+        public static async Task<PerPageData> GetIndexData(EsConnectionInfo connInfo, String indexName, int pageIndex = 0, int pageSize = 20, string strJson = "")
         {
             PerPageData pData;
             try
             {
-                String json = "{\"query\": {\"match_all\": { }},\"from\": " + (pageIndex * pageSize).ToString() + ", \"size\": " + pageSize.ToString() + "}";
+                string strDefault = string.IsNullOrEmpty(strJson)? "\"bool\":{\"must\":{\"match_all\": { }}}": strJson;
+                String json = "{\"query\": {" + strDefault + "},\"from\": " + (pageIndex * pageSize).ToString() + ", \"size\": " + pageSize.ToString() + "}";
                 string result = await HttpUtil.PostURL(connInfo.GetLastUrl() + "/" + indexName + "/_search", json, connInfo.esUsername, connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))
                 {
@@ -293,6 +294,7 @@ namespace esHelper.Common
                     {
                         int total = int.Parse(jObj.Root["hits"]["total"].ToString());
                         pData = new PerPageData(pageIndex, total, pageSize);
+                        pData.json = json;
                         pData.pageData = jObj;
                         return pData;
                     }
@@ -451,15 +453,45 @@ namespace esHelper.Common
             }
             return "";
         }
+
         /// <summary>
         /// 从json中得到
         /// </summary>
         /// <param name="jsonObj"></param>
         /// <returns></returns>
-        public static void GetFieldsByJson(JObject jsonObj, string indexName, List<string> list)
+        public static async Task<List<string>> GetFieldsByJson(EsConnectionInfo connInfo, string indexName)
         {
-            if (jsonObj == null) return;
-
+            List<string> list = new List<string>();
+            try
+            {
+                string result = await HttpUtil.GetURL(connInfo.GetLastUrl() + "/" + indexName + "/_mapping/field/*", connInfo.esUsername, connInfo.esPassword);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return list;
+                }
+                JObject jObj = JObject.Parse(result);
+                if (jObj != null && jObj.Root["error"] == null)
+                {
+                    var tokens = jObj.First.First.First.First;
+                    foreach (JToken tokenType in tokens)  //可能有多个type
+                    {
+                        foreach (JProperty propertyField in (tokenType.First as JObject).Properties())
+                        {
+                            if (propertyField.Name.StartsWith("_") == false)
+                            {
+                                list.Add(propertyField.Name);
+                            }
+                        }
+                    }
+                }
+                list.Sort();
+                return list;
+            }
+            catch
+            {
+                return list;
+            }
+            //await HttpUtil.GetURL(url, connInfo.esUsername, connInfo.esPassword);
             //var tokens = jsonObj.SelectTokens(indexName + ".mappings").Children();
             //foreach (JToken jtoken in tokens)
             //{
@@ -492,31 +524,31 @@ namespace esHelper.Common
             //    //    }
             //    //}
             //}
-            foreach (JProperty jpro in jsonObj.Properties())
-            {
-                if (jpro.Value is JValue)
-                {
-                    //string aa = jpro.Path + jpro.Name;
-                    if (jpro.Path.Contains(".properties."))
-                    {
-                        list.Add(jpro.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
-                    }
-                }
-                else if (jpro.Value is JObject)
-                {
-                    //if (jpro.Path.Contains(".properties."))
-                    //{
-                    //    list.Add(jpro.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
-                    //}
-                    //else
-                    //{
-                    //    GetFieldsByJson((JObject)jpro.Value, indexName, list);
-                    //}
-                    GetFieldsByJson((JObject)jpro.Value, indexName, list);
-                    //ISet<String> set = new SortedSet<String>();
+            //foreach (JProperty jpro in jsonObj.Properties())
+            //{
+            //    if (jpro.Value is JValue)
+            //    {
+            //        //string aa = jpro.Path + jpro.Name;
+            //        if (jpro.Path.Contains(".properties."))
+            //        {
+            //            list.Add(jpro.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
+            //        }
+            //    }
+            //    else if (jpro.Value is JObject)
+            //    {
+            //        //if (jpro.Path.Contains(".properties."))
+            //        //{
+            //        //    list.Add(jpro.Path.Replace(indexName + ".mappings.", "").Replace(".properties.", "."));
+            //        //}
+            //        //else
+            //        //{
+            //        //    GetFieldsByJson((JObject)jpro.Value, indexName, list);
+            //        //}
+            //        GetFieldsByJson((JObject)jpro.Value, indexName, list);
+            //        //ISet<String> set = new SortedSet<String>();
 
-                }
-            }
+            //    }
+            //}
         }
         /// <summary>
         /// 获取所有索引模板
@@ -542,7 +574,7 @@ namespace esHelper.Common
                     string indexName = jt1.First.Value<string>();
                     if (indexName.StartsWith(".") == false)
                     {
-                       list.Add(new EsTemplate() { Name = tempName, IndexName = indexName, Mapping = jt.First.SelectToken("mappings")});
+                        list.Add(new EsTemplate() { Name = tempName, IndexName = indexName, Mapping = jt.First.SelectToken("mappings") });
                     }
                 }
                 return list;
@@ -559,13 +591,13 @@ namespace esHelper.Common
         /// </summary>
         /// <param name="connInfo"></param>
         /// <param name="templateName"></param>
-        public static async Task<FuncResult> DeleteTemplate(EsConnectionInfo connInfo,string templateName)
+        public static async Task<FuncResult> DeleteTemplate(EsConnectionInfo connInfo, string templateName)
         {
             FuncResult funcResult = new FuncResult();
             try
-            {  
+            {
                 //DELETE _template/update-mapping-webindex.json?pretty
-                string result = await HttpUtil.DeleteURL(connInfo.GetLastUrl() + "/_template/"+ templateName + "?pretty", connInfo.esUsername, connInfo.esPassword);
+                string result = await HttpUtil.DeleteURL(connInfo.GetLastUrl() + "/_template/" + templateName + "?pretty", connInfo.esUsername, connInfo.esPassword);
                 JObject jObj = JObject.Parse(result);
                 if (jObj != null)
                 {
@@ -576,7 +608,7 @@ namespace esHelper.Common
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 funcResult.Message = ex.Message;
             }

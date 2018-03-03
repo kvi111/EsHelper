@@ -28,11 +28,11 @@ namespace esHelper
     {
         int pageIndex = 0;
         int totalPageCount = 0;
-        int rowIndex = 0;
+
         string indexName;
         EsSystemData esdata;
-        Brush background1 = Application.Current.Resources["my_Brush_ListViewItem_Background1"] as SolidColorBrush;
-        Brush background2 = Application.Current.Resources["my_Brush_ListViewItem_Background2"] as SolidColorBrush;
+        public static Brush background1 = Application.Current.Resources["my_Brush_ListViewItem_Background1"] as SolidColorBrush;
+        public static Brush background2 = Application.Current.Resources["my_Brush_ListViewItem_Background2"] as SolidColorBrush;
 
         public Page_BrowData()
         {
@@ -60,7 +60,7 @@ namespace esHelper
             textBlockTotalPageCount.Text = perPageData.totalPageCount.ToString();
             //pivot1.SelectedIndex = 1;
 
-            rowIndex = 0;
+            int rowIndex = 0;
             gridData.ColumnSpacing = 2;
             gridData.RowSpacing = 5;
             gridData.Children.Clear();
@@ -77,7 +77,7 @@ namespace esHelper
                     foreach (JObject jObj in arrData) //行
                     {
                         gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行
-                        GetAllProperty(jObj, 0);
+                        GetAllProperty(jObj, 0, rowIndex, gridData);
                         rowIndex++;
                     }
                     gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(30) }); //添加一行
@@ -85,7 +85,7 @@ namespace esHelper
             }
         }
 
-        private void GetAllProperty(JObject jObject, int columnIndex)
+        public static void GetAllProperty(JObject jObject, int columnIndex,int rowIndex, Grid gridData)
         {
             foreach (JProperty jpro in jObject.Properties())
             {
@@ -137,7 +137,7 @@ namespace esHelper
                 }
                 else if (jpro.Value is JObject)
                 {
-                    GetAllProperty((JObject)jpro.Value, columnIndex);
+                    GetAllProperty((JObject)jpro.Value, columnIndex, rowIndex, gridData);
                 }
             }
         }

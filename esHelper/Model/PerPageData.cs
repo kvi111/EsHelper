@@ -73,5 +73,7 @@ namespace esHelper.Common
         /// 当前底部或者顶部导航页码下翻页
         /// </summary>
         public int navNextPageIndex { get; set; }
+
+        public string json { get; set; }
     }
 }
