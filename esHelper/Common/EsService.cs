@@ -219,12 +219,45 @@ namespace esHelper.Common
         /// </summary>
         /// <param name="connInfo"></param>
         /// <returns></returns>
-        public static async Task<String[]> GetIndexList(EsConnectionInfo connInfo)
+        public static async Task<List<EsIndex>> GetIndexList(EsConnectionInfo connInfo, bool isShowSysIndex = false)
         {
             string json = await HttpUtil.GetURL(connInfo.GetLastUrl() + "/_cat/indices", connInfo.esUsername, connInfo.esPassword);
             try
             {
-                return json.Split(Environment.NewLine.ToCharArray());
+                String[] strlines = json.Split(Environment.NewLine.ToCharArray());
+                List<EsIndex> listIndex = new List<EsIndex>();
+                foreach (string str in strlines)
+                {
+                    if (str == "") continue;
+
+                    string[] arr = str.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    if (arr.Length == 10)
+                    {
+                        if (arr[2].StartsWith(".") == false || isShowSysIndex)
+                        {
+                            listIndex.Add(new EsIndex()
+                            {
+                                Color = arr[0],
+                                isOpen = arr[1],
+                                Name = arr[2],
+                                Id = arr[3],
+                                ShardsCount = arr[4],
+                                DocumentCount = arr[6],
+                                DataSpace = arr[8]
+                            });
+                        }
+                    }
+                    else if (arr.Length == 3)
+                    {
+                        listIndex.Add(new EsIndex()
+                        {
+                            isOpen = arr[0],
+                            Name = arr[1],
+                            Id = arr[2]
+                        });
+                    }
+                }
+                return listIndex;
             }
             catch
             {
@@ -280,7 +313,7 @@ namespace esHelper.Common
             PerPageData pData;
             try
             {
-                string strDefault = string.IsNullOrEmpty(strJson)? "\"bool\":{\"must\":{\"match_all\": { }}}": strJson;
+                string strDefault = string.IsNullOrEmpty(strJson) ? "\"bool\":{\"must\":{\"match_all\": { }}}" : strJson;
                 String json = "{\"query\": {" + strDefault + "},\"from\": " + (pageIndex * pageSize).ToString() + ", \"size\": " + pageSize.ToString() + "}";
                 string result = await HttpUtil.PostURL(connInfo.GetLastUrl() + "/" + indexName + "/_search", json, connInfo.esUsername, connInfo.esPassword);
                 if (string.IsNullOrEmpty(result))

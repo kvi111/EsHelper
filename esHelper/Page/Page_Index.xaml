@@ -1,0 +1,91 @@
+﻿<Page
+    x:Class="esHelper.Page_Index"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:esHelper"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cvt="using:esHelper.Converter"
+    xmlns:common="using:esHelper.Common"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <common:ListViewItemStyleSelector x:Key="myStyleSelector"/>
+        <cvt:OpenCloseConverter x:Key="urlCvt"/>
+        <cvt:ShowBrowseConverter x:Key="isShowBrowse"/>
+    </Page.Resources>
+    
+    <Grid Height="AUTO" Width="AUTO">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="35"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Index list"/>
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="5,0,0,0">
+            <AppBarButton Height="35" Width="35" Click="AppBarButtonAdd_Click">
+                <AppBarButton.Icon>
+                    <SymbolIcon Margin="0,-10,0,0" Symbol="Add"/>
+                </AppBarButton.Icon>
+                <ToolTipService.ToolTip>
+                    <ToolTip Content="add index" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                </ToolTipService.ToolTip>
+            </AppBarButton>
+            <AppBarButton Height="35" Width="35" Click="ToggleSwitch_Toggled" Margin="20,0,0,0">
+                <AppBarButton.Icon>
+                    <SymbolIcon Margin="0,-10,0,0" Symbol="Refresh"/>
+                </AppBarButton.Icon>
+                <ToolTipService.ToolTip>
+                    <ToolTip Content="refresh" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
+                </ToolTipService.ToolTip>
+            </AppBarButton>
+            <!--<AppBarButton Icon="Add" Label="add index" Click="AppBarButtonAdd_Click" IsCompact="True"/>-->
+            <!--<AppBarButton Icon="Refresh" Label="refresh" Click="ToggleSwitch_Toggled" IsCompact="True"/>-->
+            <!--<AppBarSeparator Visibility="Collapsed"/>
+                        <ToggleSwitch Name="ToggleSwitch1" IsOn="False" Toggled="ToggleSwitch_Toggled" HorizontalContentAlignment="Right"  HorizontalAlignment="Right" Visibility="Collapsed">
+                            <ToggleSwitch.OffContent>
+                                <TextBlock Text="don't show sys index" />
+                            </ToggleSwitch.OffContent>
+                            <ToggleSwitch.OnContent>
+                                <TextBlock Text="show sys index" />
+                            </ToggleSwitch.OnContent>
+                        </ToggleSwitch>-->
+        </StackPanel>
+        <ScrollViewer Margin="0,10,0,0" Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
+            <StackPanel  Orientation="Vertical">
+                <StackPanel  Orientation="Horizontal" Background="{ThemeResource my_Brush_ListView_Title_Background}" Height="50" VerticalAlignment="Center" BorderBrush="{ThemeResource my_Brush_ListView_Border}" BorderThickness="{ThemeResource my_Thickness_ListView_Border}">
+                    <!--<TextBlock Width="300" Text="Id"  VerticalAlignment="Center" TextAlignment="Center" />-->
+                    <TextBlock Width="300" Text="Name" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBlock Width="150" Text="IsOpen" VerticalAlignment="Center"/>
+                    <TextBlock Width="150" Text="Color" VerticalAlignment="Center"/>
+                    <TextBlock Width="150" Text="Document Count" VerticalAlignment="Center" TextAlignment="Right"/>
+                    <TextBlock Width="150" Text="Shards Count" VerticalAlignment="Center" TextAlignment="Right"/>
+                    <TextBlock Width="150" Text="Data Space" VerticalAlignment="Center" TextAlignment="Right"/>
+                    <TextBlock Width="200" Text="Action" VerticalAlignment="Center" TextAlignment="Center"/>
+                </StackPanel>
+                <ListView x:Name="listview1" SelectionMode="None" Background="{ThemeResource my_Brush_ListView_Background}" ItemContainerStyleSelector="{ThemeResource myStyleSelector}" BorderBrush="{ThemeResource my_Brush_ListView_Border}" BorderThickness="{ThemeResource my_Thickness_ListView_Border}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Center">
+                                <!--<TextBlock Width="300" Text="{Binding Id}" VerticalAlignment="Center" IsTextSelectionEnabled="True"/>-->
+                                <TextBlock Width="300" Text="{Binding Name}" VerticalAlignment="Center" IsTextSelectionEnabled="True"/>
+                                <TextBlock Width="150" Text="{Binding isOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Width="150" Text="{Binding Color}" VerticalAlignment="Center"/>
+                                <TextBlock Width="150" Text="{Binding DocumentCount}" VerticalAlignment="Center" TextAlignment="Right"/>
+                                <TextBlock Width="150" Text="{Binding ShardsCount}" VerticalAlignment="Center" TextAlignment="Right"/>
+                                <TextBlock Width="150" Text="{Binding DataSpace}" VerticalAlignment="Center" TextAlignment="Right"/>
+                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" CommandParameter="{Binding Name}" Margin="10,0,5,0" Visibility="{Binding isOpen,Converter={StaticResource isShowBrowse}}">browse</HyperlinkButton>
+                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonMapping_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0">mapping</HyperlinkButton>
+                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonOpenClose_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="{Binding isOpen,Converter={StaticResource urlCvt}}"/>
+                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonDelete_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="delete"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

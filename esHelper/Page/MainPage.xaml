@@ -6,9 +6,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tvs="using:TreeViewControl"
-    mc:Ignorable="d" Unloaded="Page_Unloaded" Loaded="Page_Loaded">
+    mc:Ignorable="d" Loaded="Page_Loaded">
 
     <Page.Resources>
+        <tvs:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
+        <cvt:NodeExpendIconStateConverter x:Key="nodeExpendIconConverter" OpenImage="/Assets/icon/open.png" CloseImage="/Assets/icon/close.png" />
+        <cvt:GlyphConverter x:Key="folderGlyphConverter" ExpandedGlyph="&#xED44;" CollapsedGlyph="&#xED42;" />
+        <cvt:GlyphConverter x:Key="folderOutlineGlyphConverter" ExpandedGlyph="&#xED43;" CollapsedGlyph="&#xED41;" />
+        <cvt:GlyphConverter x:Key="expandCollapseGlyphConverter" ExpandedGlyph="&#xE70D;" CollapsedGlyph="&#xE76C;"/>
+        <cvt:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"  />
+        <cvt:BooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter" IsInverse="True" />
+        
+        <cvt:StringTxtTrimDotConverter x:Key="stringTxtTrimDot"/>
+        <cvt:PivotIsShowCloseButtonConverter x:Key="isShowCloseButton"/>
+        
         <MenuFlyout x:Name="BlankMenuFlyout">
             <!--<MenuFlyoutItem Name="Menu_Create" Text="新建连接" Click="MenuFlyout_Click"/>-->
             <MenuFlyoutItem Name="Menu_Refresh" Text="Refresh" Click="Menu_Refresh_Click"/>
@@ -21,13 +32,6 @@
             <!--<MenuFlyoutItem Name="Menu_Edit" Text="编辑连接" Click="Menu_Edit_Click"/>-->
             <MenuFlyoutItem Name="Menu_Delete" Text="delete" Click="Menu_Delete_Click"/>
         </MenuFlyout>
-        <tvs:IntegerToIndentationConverter x:Key="IntToIndConverter"/>
-        <cvt:NodeExpendIconStateConverter x:Key="nodeExpendIconConverter" OpenImage="Assets/icon/open.png" CloseImage="Assets/icon/close.png" />
-        <cvt:GlyphConverter x:Key="folderGlyphConverter" ExpandedGlyph="&#xED44;" CollapsedGlyph="&#xED42;" />
-        <cvt:GlyphConverter x:Key="folderOutlineGlyphConverter" ExpandedGlyph="&#xED43;" CollapsedGlyph="&#xED41;" />
-        <cvt:GlyphConverter x:Key="expandCollapseGlyphConverter" ExpandedGlyph="&#xE70D;" CollapsedGlyph="&#xE76C;"/>
-        <cvt:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"  />
-        <cvt:BooleanToVisibilityConverter x:Key="inverseBooleanToVisibilityConverter" IsInverse="True" />
 
         <DataTemplate x:Key="TreeViewItemDataTemplate">
             <StackPanel Orientation="Horizontal" Height="40" Margin="{Binding Depth, Converter={StaticResource IntToIndConverter}}" AllowDrop="False">
@@ -99,6 +103,9 @@
             <AppBarButton Icon="Add" Label="new" Click="Menu_Create_Click" Content="111"/>
             <AppBarButton Icon="Refresh" Label="refresh" Click="Menu_Refresh_Click"/>
             <AppBarSeparator/>
+            <AppBarButton Icon="CalendarDay" Label="Query" Click="Menu_Query_Click"/>
+            <AppBarButton Icon="ShowResults" Label="Search" Click="Menu_Search_Click"/>
+            <AppBarSeparator/>
             <AppBarButton Icon="Help" Label="help" Click="Menu_Help_Click"/>
         </StackPanel>
         <tvs:TreeView x:Name="sampleTreeView" 
@@ -118,8 +125,25 @@
                 </TransitionCollection>
             </tvs:TreeView.ItemContainerTransitions>
         </tvs:TreeView>
-        <Frame Name="contentFrame" Grid.Row="1" Grid.Column="1" Background="{ThemeResource my_Brush_ContentBackground}">
+        <!--<Frame Name="contentFrame" Grid.Row="1" Grid.Column="1" Background="{ThemeResource my_Brush_ContentBackground}">
 
-        </Frame>
+        </Frame>-->
+        <Pivot Name="pivot1" Grid.Row="1" Grid.Column="1" Background="{ThemeResource my_Brush_ContentBackground}">
+            <Pivot.HeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Converter={StaticResource stringTxtTrimDot}}" FontSize="20" x:Name="tb1"/>
+                        <Image Source="/Assets/close.png" Width="16" Height="16" Tapped="ImageClose_Tapped" Visibility="{Binding Converter={StaticResource isShowCloseButton}}" Tag="{Binding}"></Image>
+                        <!--<Image Source="Assets/close.png" Width="16" Height="16" Tapped="Image_Tapped" DataContext="this"></Image>-->
+                        <!--<TextBlock Text="×" Foreground="#000000" FontSize="20" Tapped="Image_Tapped"/>-->
+                    </StackPanel>
+                </DataTemplate>
+            </Pivot.HeaderTemplate>
+            <PivotItem Header=" " Name="pivotItemIndex">
+                <Frame Name="contentFrame">
+
+                </Frame>
+            </PivotItem>
+        </Pivot>
     </Grid>
 </Page>

@@ -25,7 +25,10 @@ namespace esHelper
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public static List<Common.EsConnectionInfo> listConnectionInfo = new List<Common.EsConnectionInfo>();
+        public static MainPage mainPage;
+
+        public List<Common.EsConnectionInfo> listConnectionInfo = new List<Common.EsConnectionInfo>();
+        public List<EsIndex> listIndex = new List<EsIndex>();
         public TreeNode lastTreeNode;
         public MainPage()
         {
@@ -36,6 +39,8 @@ namespace esHelper
             sampleTreeView.DoubleTapped += SampleTreeView_DoubleTapped;
 
             contentFrame.Navigate(typeof(Welcome), null);
+
+            mainPage = this;
         }
 
         private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -43,14 +48,7 @@ namespace esHelper
             Menu_Refresh_Click(sender, e);
         }
 
-        private void Page_Unloaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            //if (sshClient.IsConnected)
-            //{
-            //    sshClient.Disconnect();
-            //    sshClient.Dispose();
-            //}
-        }
+        #region treeview
 
         private void SampleTreeView_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
         {
@@ -101,16 +99,20 @@ namespace esHelper
             TreeNode node = (TreeNode)args.ClickedItem;
 
             EsSystemData data = node.Data as EsSystemData;
+            PivotItem pi = pivot1.Items[0] as PivotItem;
             switch (data.ItemType)
             {
                 case EsTreeItemType.esIndex:
-                    contentFrame.Navigate(typeof(Index), node.ParentNode.Data as EsSystemData);
+                    contentFrame.Navigate(typeof(Page_Index), node.ParentNode.Data as EsSystemData);
+                    pi.Header = "Index";
                     break;
                 case EsTreeItemType.esTemplate:
                     contentFrame.Navigate(typeof(Template), node.ParentNode.Data as EsSystemData);
+                    pi.Header = "Template";
                     break;
                 case EsTreeItemType.esPlugin:
                     contentFrame.Navigate(typeof(Page_Plugin), node.ParentNode.Data as EsSystemData);
+                    pi.Header = "Plugin";
                     break;
                 case EsTreeItemType.esNode:
                     break;
@@ -141,26 +143,15 @@ namespace esHelper
             //contentFrame.Navigate(typeof(BlankPage1), e);
         }
 
-        private void AddButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            ContentDialog_Connection cd1 = new ContentDialog_Connection();
-            cd1.ShowAsync().GetResults();
-            if (cd1.isSuccess && cd1.connInfo != null)
-            {
-                AddNode(cd1.connInfo);
-            }
-        }
-
-        private void Menu_Refresh_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            sampleTreeView.RootNode.Clear();
-
-            listConnectionInfo = EsService.GetEsFiles();
-            foreach (EsConnectionInfo connInfo in listConnectionInfo)
-            {
-                AddNode(connInfo);
-            }
-        }
+        //private void AddButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        //{
+        //    ContentDialog_Connection cd1 = new ContentDialog_Connection();
+        //    cd1.ShowAsync().GetResults();
+        //    if (cd1.isSuccess && cd1.connInfo != null)
+        //    {
+        //        AddNode(cd1.connInfo);
+        //    }
+        //}
 
         private void AddNode(EsConnectionInfo connInfo)
         {
@@ -168,6 +159,18 @@ namespace esHelper
             sampleTreeView.RootNode.Add(workFolder);
         }
 
+        private void AddTreeNodeChild(TreeNode tn)
+        {
+            tn.Add(new TreeNode() { Data = new EsSystemData("Index", EsTreeItemType.esIndex) });
+            tn.Add(new TreeNode() { Data = new EsSystemData("Template", EsTreeItemType.esTemplate) });
+            tn.Add(new TreeNode() { Data = new EsSystemData("Plugin", EsTreeItemType.esPlugin) });
+
+            //tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
+            //tn.IsExpanded = true;
+        }
+        #endregion
+
+        #region menu
         private void Menu_Open_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             PageUtil.SetLoadingCursor();
@@ -215,18 +218,6 @@ namespace esHelper
             }
         }
 
-
-
-        private void AddTreeNodeChild(TreeNode tn)
-        {
-            tn.Add(new TreeNode() { Data = new EsSystemData("Index", EsTreeItemType.esIndex) });
-            tn.Add(new TreeNode() { Data = new EsSystemData("Template", EsTreeItemType.esTemplate) });
-            tn.Add(new TreeNode() { Data = new EsSystemData("Plugin", EsTreeItemType.esPlugin) });
-            
-            //tn.Add(new TreeNode() { Data = new EsSystemData("Node", EsTreeItemType.esNode) });
-            //tn.IsExpanded = true;
-        }
-
         private void Menu_Close_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             if (lastTreeNode != null && lastTreeNode.Data != null)
@@ -258,6 +249,17 @@ namespace esHelper
                 sampleTreeView.RootNode.Add(workFolder);
             }
         }
+        private void Menu_Refresh_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            sampleTreeView.RootNode.Clear();
+
+            listConnectionInfo = EsService.GetEsFiles();
+            foreach (EsConnectionInfo connInfo in listConnectionInfo)
+            {
+                AddNode(connInfo);
+            }
+        }
+
         private void Menu_Edit_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             //ContentDialog1 cd1 = new ContentDialog1();
@@ -292,10 +294,83 @@ namespace esHelper
             }
         }
 
+        private void Menu_Query_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            AddPivote(typeof(Page_Search), "Query");
+        }
+
+        private void AddPivote(Type sourcePageType, String title)
+        {
+            if (sampleTreeView.SelectedItem != null)
+            {
+                TreeNode treeNode = sampleTreeView.SelectedItem as TreeNode;
+                EsSystemData esSystemData = treeNode.Data as EsSystemData;
+
+                if (esSystemData.ItemType == EsTreeItemType.esConnection)
+                {
+                    if (esSystemData.IsConnect)
+                    {
+                        AddPivotItem(sourcePageType, esSystemData, title + "@" + esSystemData.Name);
+                    }
+                }
+                else
+                {
+                    esSystemData = treeNode.ParentNode.Data as EsSystemData;
+                    if (esSystemData.IsConnect)
+                    {
+                        AddPivotItem(sourcePageType, esSystemData, title + "@" + esSystemData.Name);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添加一个新的item，并且加载对应的页面,并且切换过去
+        /// </summary>
+        /// <param name="sourcePageType"></param>
+        /// <param name="esSystemData"></param>
+        /// <param name="title"></param>
+        private void AddPivotItem(Type sourcePageType, EsSystemData esSystemData, string title)
+        {
+            PivotItem pi = new PivotItem() { Header = title + "$" + Guid.NewGuid().ToString() };
+
+            Frame frame = new Frame();
+            //frame.Background = new SolidColorBrush() { Color = Colors.AliceBlue };
+            pi.Content = frame;
+            //frame.Tag = esSystemData;
+            frame.Navigate(sourcePageType, esSystemData);
+
+            pivot1.Items.Add(pi);
+            pivot1.SelectedIndex = pivot1.Items.Count - 1;
+        }
+
+        private void Menu_Search_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            AddPivote(typeof(Page_Search), "Search");
+        }
+
+        
+
         private void Menu_Help_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             PageUtil.ShowMsg("esHelper for above ElasticSearch 5！");
             //(new MessageDialog("esHelper for above ElasticSearch 5！")).ShowAsync();
+        }
+        #endregion
+
+        private void ImageClose_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            Image img = e.OriginalSource as Image;
+            string itemHeaderName = img.Tag as string;
+            int index = 0;
+            foreach (PivotItem pi in pivot1.Items)
+            {
+                if (itemHeaderName == pi.Header.ToString())
+                {
+                    pivot1.Items.RemoveAt(index);
+                }
+                index++;
+            }
         }
     }
 }

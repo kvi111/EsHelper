@@ -107,16 +107,25 @@
     <Compile Include="Converter\PivotIsShowCloseButtonConverter.cs" />
     <Compile Include="Converter\ShowBrowseConverter.cs" />
     <Compile Include="Model\EsTemplate.cs" />
-    <Compile Include="Page_BrowData.xaml.cs">
+    <Compile Include="Page\Page_BrowData.xaml.cs">
       <DependentUpon>Page_BrowData.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Page_Plugin.xaml.cs">
+    <Compile Include="Page\Page_Index.xaml.cs">
+      <DependentUpon>Page_Index.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Page\Page_Plugin.xaml.cs">
       <DependentUpon>Page_Plugin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Template.xaml.cs">
+    <Compile Include="Page\Page_Query.xaml.cs">
+      <DependentUpon>Page_Query.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Page\Page_Search.xaml.cs">
+      <DependentUpon>Page_Search.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Page\Template.xaml.cs">
       <DependentUpon>Template.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Welcome.xaml.cs">
+    <Compile Include="Page\Welcome.xaml.cs">
       <DependentUpon>Welcome.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\PageBase.cs" />
@@ -131,19 +140,19 @@
     <Compile Include="Converter\ItemIndexConverter.cs" />
     <Compile Include="Converter\OpenCloseConverter.cs" />
     <Compile Include="Model\PerPageData.cs" />
-    <Compile Include="ContentDialog_Connection.xaml.cs">
+    <Compile Include="Page\ContentDialog_Connection.xaml.cs">
       <DependentUpon>ContentDialog_Connection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ContentDialog_Mapping.xaml.cs">
+    <Compile Include="Page\ContentDialog_Mapping.xaml.cs">
       <DependentUpon>ContentDialog_Mapping.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ContentDialog_NewIndex.xaml.cs">
+    <Compile Include="Page\ContentDialog_NewIndex.xaml.cs">
       <DependentUpon>ContentDialog_NewIndex.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Index.xaml.cs">
+    <Compile Include="Page\Index.xaml.cs">
       <DependentUpon>Index.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainPage.xaml.cs">
+    <Compile Include="Page\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -218,39 +227,51 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Page_BrowData.xaml">
+    <Page Include="Page\Page_BrowData.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Page_Plugin.xaml">
+    <Page Include="Page\Page_Index.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Template.xaml">
+    <Page Include="Page\Page_Plugin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Welcome.xaml">
+    <Page Include="Page\Page_Query.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContentDialog_Connection.xaml">
+    <Page Include="Page\Page_Search.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContentDialog_Mapping.xaml">
+    <Page Include="Page\Template.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ContentDialog_NewIndex.xaml">
+    <Page Include="Page\Welcome.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Index.xaml">
+    <Page Include="Page\ContentDialog_Connection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainPage.xaml">
+    <Page Include="Page\ContentDialog_Mapping.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Page\ContentDialog_NewIndex.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Page\Index.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Page\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
