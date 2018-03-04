@@ -121,9 +121,14 @@ namespace esHelper
             mappingDig.ShowAsync();
         }
 
-        private void Menu_CreateMapping_Click(object sender, RoutedEventArgs e)
+        private async void Menu_CreateMapping_Click(object sender, RoutedEventArgs e)
         {
-
+            JObject jObject = await EsService.GetIndexMapping(esdata.EsConnInfo, CommandParameter);
+            var tokens = jObject.SelectTokens(CommandParameter + ".mappings");
+            string mappings =(tokens.First<JToken>() as JObject).ToString();
+            mappings = "put "+ CommandParameter + "{ \"mappings\":"+ mappings + "}";
+            esdata.Tag = mappings;
+            MainPage.mainPage.AddPivotItem(typeof(Page_Query), esdata, "Query@" + esdata.Name);
         }
 
         private void Menu_BrowseData_Click(object sender, RoutedEventArgs e)

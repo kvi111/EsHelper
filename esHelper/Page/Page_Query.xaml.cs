@@ -36,6 +36,10 @@ namespace esHelper
             if (e.Parameter == null) return;
 
             esdata = e.Parameter as EsSystemData;
+            if (esdata.Tag != null)
+            {
+                txtBoxCommand.Text = AutoIndent(esdata.Tag.ToString());
+            }
         }
 
         #region search
@@ -106,6 +110,15 @@ namespace esHelper
         private void AppBarButtonAutoIndent_Click(object sender, RoutedEventArgs e)
         {
             string selTxt = txtBoxCommand.SelectedText;
+            txtBoxCommand.SelectedText = AutoIndent(selTxt);
+        }
+
+        /// <summary>
+        /// json格式化
+        /// </summary>
+        /// <param name="selTxt"></param>
+        private string AutoIndent(string selTxt)
+        {
             if (string.IsNullOrEmpty(selTxt) == false)
             {
                 string[] arrCommandTxt = selTxt.Split(new char[] { '{' }, 2, StringSplitOptions.RemoveEmptyEntries);
@@ -116,7 +129,7 @@ namespace esHelper
                         JObject jobject = JObject.Parse("{" + arrCommandTxt[1]);
                         if (jobject != null)
                         {
-                            txtBoxCommand.SelectedText = arrCommandTxt[0].Trim('\r') + "\r" + jobject.ToString();
+                            return arrCommandTxt[0].Trim('\r') + "\r" + jobject.ToString();
                         }
                     }
                     catch
@@ -125,6 +138,7 @@ namespace esHelper
                     }
                 }
             }
+            return "";
         }
         #endregion
 
