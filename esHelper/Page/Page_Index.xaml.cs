@@ -58,75 +58,113 @@ namespace esHelper
             await InitData(false);  //ToggleSwitch1.IsOn
         }
 
-        private async void HyperlinkButtonBrowse_Click(object sender, RoutedEventArgs e)
+        ///// <summary>
+        ///// 添加一个新的item，并且加载对应的页面,并且切换过去
+        ///// </summary>
+        ///// <param name="sourcePageType"></param>
+        ///// <param name="indexName"></param>
+        //private void AddPivotItem(Type sourcePageType, string indexName)
+        //{
+        //    PivotItem pi = new PivotItem() { Header = indexName + "$" + Guid.NewGuid().ToString() };
+
+        //    Frame frame = new Frame();
+        //    //frame.Background = new SolidColorBrush() { Color = Colors.AliceBlue };
+        //    pi.Content = frame;
+        //    frame.Tag = esdata;
+        //    frame.Navigate(sourcePageType, indexName);
+
+        //    PivotItem piParent = (this.Parent as Frame).Parent as PivotItem;
+        //    Pivot pivot1 = piParent.Parent as Pivot;
+        //    pivot1.Items.Add(pi);
+        //    pivot1.SelectedIndex = pivot1.Items.Count - 1;
+        //}
+
+        private async void AppBarButtonAdd_Click(object sender, RoutedEventArgs e)
         {
-            HyperlinkButton btn = sender as HyperlinkButton;
-            string indexName = btn.CommandParameter.ToString();
-            AddPivotItem(typeof(Page_BrowData), indexName);
+            ContentDialog_NewIndex cdni = new ContentDialog_NewIndex();
+            cdni.esdata = esdata;
+            await cdni.ShowAsync();
+            if (cdni.result != null && cdni.result.Success)
+            {
+                ToggleSwitch_Toggled(sender, e); //重新加载索引列表
+            }
         }
 
-        /// <summary>
-        /// 添加一个新的item，并且加载对应的页面,并且切换过去
-        /// </summary>
-        /// <param name="sourcePageType"></param>
-        /// <param name="indexName"></param>
-        private void AddPivotItem(Type sourcePageType, string indexName)
-        {
-            PivotItem pi = new PivotItem() { Header = indexName + "$" + Guid.NewGuid().ToString() };
-
-            Frame frame = new Frame();
-            //frame.Background = new SolidColorBrush() { Color = Colors.AliceBlue };
-            pi.Content = frame;
-            frame.Tag = esdata;
-            frame.Navigate(sourcePageType, indexName);
-
-            PivotItem piParent = (this.Parent as Frame).Parent as PivotItem;
-            Pivot pivot1 = piParent.Parent as Pivot;
-            pivot1.Items.Add(pi);
-            pivot1.SelectedIndex = pivot1.Items.Count - 1;
-        }
-
-
-
-        private async void HyperlinkButtonMapping_Click(object sender, RoutedEventArgs e)
+        private void HyperlinkButtonAction_Click(object sender, RoutedEventArgs e)
         {
             HyperlinkButton btn = sender as HyperlinkButton;
-            JObject jObject = await EsService.GetIndexMapping(esdata.EsConnInfo, btn.CommandParameter.ToString());
+            CommandParameter = btn.CommandParameter.ToString();
+            isOpenClose = btn.Tag.ToString();
+            if (isOpenClose == "open")
+            {
+                Menu_CloseIndex.IsEnabled = true;
+                Menu_OpenIndex.IsEnabled = false;
+                Menu_BrowseData.IsEnabled = true;
+            }
+            else
+            {
+                Menu_CloseIndex.IsEnabled = false;
+                Menu_OpenIndex.IsEnabled = true;
+                Menu_BrowseData.IsEnabled = false;
+            }
+            ActionMenuFlyout.ShowAt(sender as HyperlinkButton);
+            return;
+        }
+        #endregion
+
+        #region menu
+        string CommandParameter = "", isOpenClose = "";
+        private async void Menu_IndexMapping_Click(object sender, RoutedEventArgs e)
+        {
+            JObject jObject = await EsService.GetIndexMapping(esdata.EsConnInfo, CommandParameter);
             ContentDialog_Mapping mappingDig = new ContentDialog_Mapping(jObject.ToString());
             mappingDig.ShowAsync();
         }
 
-        private async void HyperlinkButtonOpenClose_Click(object sender, RoutedEventArgs e)
+        private void Menu_CreateMapping_Click(object sender, RoutedEventArgs e)
         {
-            HyperlinkButton btn = sender as HyperlinkButton;
-            if (btn.Content.ToString() == "open")
+
+        }
+
+        private void Menu_BrowseData_Click(object sender, RoutedEventArgs e)
+        {
+            string indexName = CommandParameter;
+            esdata.Tag = indexName;
+            MainPage.mainPage.AddPivotItem(typeof(Page_BrowData), esdata, indexName + "@" + esdata.Name);
+        }
+
+        private async void Menu_OpenIndex_Click(object sender, RoutedEventArgs e)
+        {
+            bool result = await EsService.OpenIndex(esdata.EsConnInfo, CommandParameter);
+            if (result == false)
             {
-                bool result = await EsService.OpenIndex(esdata.EsConnInfo, btn.CommandParameter.ToString());
-                if (result == false)
-                {
-                    (new MessageDialog("open fail")).ShowAsync();
-                }
-                else
-                {
-                    ToggleSwitch_Toggled(sender, e); //重新加载索引列表
-                }
+                PageUtil.ShowMsg("open fail");
+                //(new MessageDialog("open fail")).ShowAsync();
             }
-            if (btn.Content.ToString() == "close")
+            else
             {
-                bool result = await EsService.CloseIndex(esdata.EsConnInfo, btn.CommandParameter.ToString());
-                if (result == false)
-                {
-                    (new MessageDialog("close fail")).ShowAsync();
-                }
-                else
-                {
-                    ToggleSwitch_Toggled(sender, e); //重新加载索引列表
-                }
+                ToggleSwitch_Toggled(sender, e); //重新加载索引列表
+            }
+
+        }
+
+        private async void Menu_CloseIndex_Click(object sender, RoutedEventArgs e)
+        {
+            bool result = await EsService.CloseIndex(esdata.EsConnInfo, CommandParameter);
+            if (result == false)
+            {
+                PageUtil.ShowMsg("close fail");
+                //(new MessageDialog("close fail")).ShowAsync();
+            }
+            else
+            {
+                ToggleSwitch_Toggled(sender, e); //重新加载索引列表
             }
         }
-        private async void HyperlinkButtonDelete_Click(object sender, RoutedEventArgs e)
+
+        private async void Menu_DeleteIndex_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new MessageDialog("are you sure to delete this index?");
+            var dialog = new MessageDialog("are you sure to delete the \""+ CommandParameter + "\" ?");
 
             dialog.Commands.Add(new UICommand("ok", cmd => { }, commandId: 0));
             dialog.Commands.Add(new UICommand("cancel", cmd => { }, commandId: 1));
@@ -139,26 +177,16 @@ namespace esHelper
             var result = await dialog.ShowAsync();
             if (result.Label == "ok")
             {
-                HyperlinkButton btn = sender as HyperlinkButton;
-                bool resultBool = await EsService.DeleteIndex(esdata.EsConnInfo, btn.CommandParameter.ToString());
+                bool resultBool = await EsService.DeleteIndex(esdata.EsConnInfo, CommandParameter);
                 if (resultBool == false)
                 {
-                    (new MessageDialog("delete fail")).ShowAsync();
+                    PageUtil.ShowMsg("delete fail");
+                    //(new MessageDialog("delete fail")).ShowAsync();
                 }
                 else
                 {
                     ToggleSwitch_Toggled(sender, e); //重新加载索引列表
                 }
-            }
-        }
-        private async void AppBarButtonAdd_Click(object sender, RoutedEventArgs e)
-        {
-            ContentDialog_NewIndex cdni = new ContentDialog_NewIndex();
-            cdni.esdata = esdata;
-            await cdni.ShowAsync();
-            if (cdni.result != null && cdni.result.Success)
-            {
-                ToggleSwitch_Toggled(sender, e); //重新加载索引列表
             }
         }
         #endregion

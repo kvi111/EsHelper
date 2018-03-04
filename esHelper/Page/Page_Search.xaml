@@ -51,8 +51,8 @@
                 <Button Content="search" Style="{ThemeResource ButtonStyleNormal}" ToolTipService.ToolTip="search" Click="ButtonSearch_Click"></Button>
             </StackPanel>
         </StackPanel>
-        <TextBlock Name="txtJson" Grid.Column="1" Grid.Row="0" TextWrapping="Wrap"></TextBlock>
-        <ScrollViewer Name="scrollView" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <TextBlock Name="txtJson" Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" IsTextSelectionEnabled="True"></TextBlock>
+        <ScrollViewer Name="scrollView" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="0,0,0,10">
             <Grid Name="gridData" BorderBrush="{ThemeResource my_Brush_ListView_Border}" BorderThickness="{ThemeResource my_Thickness_ListView_Border}" Background="{ThemeResource my_Brush_ListView_Background}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="AUTO"></RowDefinition>

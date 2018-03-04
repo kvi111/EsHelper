@@ -100,13 +100,13 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <AppBarButton Icon="Add" Label="new" Click="Menu_Create_Click" Content="111"/>
-            <AppBarButton Icon="Refresh" Label="refresh" Click="Menu_Refresh_Click"/>
+            <AppBarButton Icon="Add" Label="New" Click="Menu_Create_Click" Content="111"/>
+            <AppBarButton Icon="Refresh" Label="Refresh" Click="Menu_Refresh_Click"/>
             <AppBarSeparator/>
             <AppBarButton Icon="CalendarDay" Label="Query" Click="Menu_Query_Click"/>
             <AppBarButton Icon="ShowResults" Label="Search" Click="Menu_Search_Click"/>
             <AppBarSeparator/>
-            <AppBarButton Icon="Help" Label="help" Click="Menu_Help_Click"/>
+            <AppBarButton Icon="Help" Label="Help" Click="Menu_Help_Click"/>
         </StackPanel>
         <tvs:TreeView x:Name="sampleTreeView" 
                       Grid.Row="1" Grid.Column="0"

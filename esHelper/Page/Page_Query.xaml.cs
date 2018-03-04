@@ -41,37 +41,50 @@ namespace esHelper
         #region search
         private async void AppBarButtonRun_Click(object sender, RoutedEventArgs e)
         {
-            string commandTxt = string.IsNullOrEmpty(txtBoxCommand.SelectedText) ? txtBoxCommand.Text.Trim() : txtBoxCommand.SelectedText;
-            if (string.IsNullOrEmpty(commandTxt) == false)
+            PageUtil.SetLoadingCursor();
+            try
             {
-                string[] arrCommandTxt = commandTxt.Split(new char[] { '{' }, 2, StringSplitOptions.RemoveEmptyEntries);
-                if (arrCommandTxt.Length == 1)
+                string commandTxt = string.IsNullOrEmpty(txtBoxCommand.SelectedText) ? txtBoxCommand.Text.Trim() : txtBoxCommand.SelectedText;
+                if (string.IsNullOrEmpty(commandTxt) == false)
                 {
-                    string[] arr1 = arrCommandTxt[0].ToString().Split(' ');
-                    if (arr1.Length == 2)
+                    string[] arrCommandTxt = commandTxt.Split(new char[] { '{' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    if (arrCommandTxt.Length == 1)
                     {
-                        string method = arr1[0].Trim();
-                        string command = arr1[1].Trim();
-                        ShowResult(await EsService.RunJson(esdata.EsConnInfo, method, command));
+                        string[] arr1 = arrCommandTxt[0].ToString().Split(' ');
+                        if (arr1.Length == 2)
+                        {
+                            string method = arr1[0].Trim();
+                            string command = arr1[1].Trim();
+                            ShowResult(await EsService.RunJson(esdata.EsConnInfo, method, command));
+                        }
                     }
-                }
-                else if (arrCommandTxt.Length == 2)  //带{}的命令
-                {
-                    string[] arr1 = arrCommandTxt[0].ToString().Split(' ');
-                    if (arr1.Length == 2)
+                    else if (arrCommandTxt.Length == 2)  //带{}的命令
                     {
-                        string method = arr1[0].Trim();
-                        string command = arr1[1].Trim().Trim('/');
-                        string json = "{" + arrCommandTxt[1].Trim();
-                        string result = await EsService.RunJson(esdata.EsConnInfo, method, command, json);
-                        ShowResult(result);
+                        string[] arr1 = arrCommandTxt[0].ToString().Split(' ');
+                        if (arr1.Length == 2)
+                        {
+                            string method = arr1[0].Trim();
+                            string command = arr1[1].Trim().Trim('/');
+                            string json = "{" + arrCommandTxt[1].Trim();
+                            string result = await EsService.RunJson(esdata.EsConnInfo, method, command, json);
+                            ShowResult(result);
+                        }
                     }
                 }
             }
+            catch
+            {
+
+            }
+            PageUtil.SetDefaultCursor();
         }
 
         private void ShowResult(string result)
         {
+            if (string.IsNullOrEmpty(result))
+            {
+                result = "";
+            }
             try
             {
                 JObject jobject = JObject.Parse(result);

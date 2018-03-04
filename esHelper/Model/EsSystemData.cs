@@ -27,6 +27,8 @@ namespace esHelper.Common
         public bool IsFolder { get; set; }
 
         public bool IsConnect { get; set; }
+
+        public object Tag { get; set; }
     }
 
     public enum EsTreeItemType

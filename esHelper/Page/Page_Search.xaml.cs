@@ -115,16 +115,23 @@ namespace esHelper
                         comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "term", IsSelected = true });
                         comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "wildcard" });
                         comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "prefix" });
-                        comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "fuzzy" });
-                        comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "range" });
+                        //comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "fuzzy" });
+                        //comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "range" });
                         comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "query_string" });
                         comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "text" });
                         comboBoxMustSearchKeyword.Items.Add(new ComboBoxItem() { Content = "missing" });
                         spH.Children.Add(comboBoxMustSearchKeyword);
 
                         TextBox textBox = new TextBox();
-                        textBox.Width = 100;
+                        textBox.Width = 150;
                         textBox.BorderThickness = new Thickness(0.2);
+
+                        InputScope inputScope = new InputScope();
+                        InputScopeName inputScopeName = new InputScopeName();
+                        inputScopeName.NameValue = InputScopeNameValue.Digits;
+                        inputScope.Names.Add(inputScopeName);
+
+                        textBox.InputScope = inputScope;
                         spH.Children.Add(textBox);
 
                         spLine.Children.Add(spH);
@@ -235,7 +242,7 @@ namespace esHelper
                 if (arrData.Count > 0)
                 {
 
-                    gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) }); //添加一行, 存放标题栏
+                    gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) }); //添加一行, 存放标题栏
                     foreach (JObject jObj in arrData) //行
                     {
                         gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行

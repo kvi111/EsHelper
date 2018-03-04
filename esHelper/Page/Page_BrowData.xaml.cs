@@ -45,8 +45,8 @@ namespace esHelper
             base.OnNavigatedTo(e);
             if (e.Parameter == null) return;
 
-            indexName = e.Parameter as string;
-            esdata = this.Frame.Tag as EsSystemData;
+            esdata = e.Parameter as EsSystemData;
+            indexName = esdata.Tag.ToString();
 
             await GetBrowsePageData(indexName, pageIndex);
         }
@@ -73,7 +73,7 @@ namespace esHelper
                 if (arrData.Count > 0)
                 {
 
-                    gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(50) }); //添加一行, 存放标题栏
+                    gridData.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) }); //添加一行, 存放标题栏
                     foreach (JObject jObj in arrData) //行
                     {
                         gridData.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto }); //添加一行

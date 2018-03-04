@@ -281,7 +281,6 @@ namespace esHelper
             IUICommand result = await dialog.ShowAsync();
             if (result.Label == "ok")
             {
-
                 if (lastTreeNode != null && lastTreeNode.Data != null)
                 {
                     EsSystemData esSD = (EsSystemData)lastTreeNode.Data;
@@ -296,10 +295,10 @@ namespace esHelper
 
         private void Menu_Query_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            AddPivote(typeof(Page_Search), "Query");
+            AddPivotItem(typeof(Page_Query), "Query");
         }
 
-        private void AddPivote(Type sourcePageType, String title)
+        public void AddPivotItem(Type sourcePageType, String title)
         {
             if (sampleTreeView.SelectedItem != null)
             {
@@ -330,7 +329,7 @@ namespace esHelper
         /// <param name="sourcePageType"></param>
         /// <param name="esSystemData"></param>
         /// <param name="title"></param>
-        private void AddPivotItem(Type sourcePageType, EsSystemData esSystemData, string title)
+        public void AddPivotItem(Type sourcePageType, EsSystemData esSystemData, string title)
         {
             PivotItem pi = new PivotItem() { Header = title + "$" + Guid.NewGuid().ToString() };
 
@@ -346,7 +345,7 @@ namespace esHelper
 
         private void Menu_Search_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            AddPivote(typeof(Page_Search), "Search");
+            AddPivotItem(typeof(Page_Search), "Search");
         }
 
         

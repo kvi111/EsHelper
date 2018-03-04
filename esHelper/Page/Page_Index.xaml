@@ -13,6 +13,17 @@
         <common:ListViewItemStyleSelector x:Key="myStyleSelector"/>
         <cvt:OpenCloseConverter x:Key="urlCvt"/>
         <cvt:ShowBrowseConverter x:Key="isShowBrowse"/>
+
+        <MenuFlyout x:Key="MenuFlyout" x:Name="ActionMenuFlyout">
+            <MenuFlyoutItem Name="Menu_IndexMapping" Text="Index mapping" Click="Menu_IndexMapping_Click"/>
+            <MenuFlyoutItem Name="Menu_CreateMapping" Text="Create mapping" Click="Menu_CreateMapping_Click"/>
+            <MenuFlyoutSeparator></MenuFlyoutSeparator>
+            <MenuFlyoutItem Name="Menu_BrowseData" Text="Browse data" Click="Menu_BrowseData_Click"/>
+            <MenuFlyoutSeparator></MenuFlyoutSeparator>
+            <MenuFlyoutItem Name="Menu_OpenIndex" Text="Open index" Click="Menu_OpenIndex_Click"/>
+            <MenuFlyoutItem Name="Menu_CloseIndex" Text="Close index" Click="Menu_CloseIndex_Click"/>
+            <MenuFlyoutItem Name="Menu_DeleteIndex" Text="Delete index" Click="Menu_DeleteIndex_Click"/>
+        </MenuFlyout>
     </Page.Resources>
     
     <Grid Height="AUTO" Width="AUTO">
@@ -42,17 +53,6 @@
                     <ToolTip Content="refresh" Placement="Bottom"  HorizontalOffset="0" VerticalOffset="30" />
                 </ToolTipService.ToolTip>
             </AppBarButton>
-            <!--<AppBarButton Icon="Add" Label="add index" Click="AppBarButtonAdd_Click" IsCompact="True"/>-->
-            <!--<AppBarButton Icon="Refresh" Label="refresh" Click="ToggleSwitch_Toggled" IsCompact="True"/>-->
-            <!--<AppBarSeparator Visibility="Collapsed"/>
-                        <ToggleSwitch Name="ToggleSwitch1" IsOn="False" Toggled="ToggleSwitch_Toggled" HorizontalContentAlignment="Right"  HorizontalAlignment="Right" Visibility="Collapsed">
-                            <ToggleSwitch.OffContent>
-                                <TextBlock Text="don't show sys index" />
-                            </ToggleSwitch.OffContent>
-                            <ToggleSwitch.OnContent>
-                                <TextBlock Text="show sys index" />
-                            </ToggleSwitch.OnContent>
-                        </ToggleSwitch>-->
         </StackPanel>
         <ScrollViewer Margin="0,10,0,0" Grid.Column="0" Grid.Row="2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto">
             <StackPanel  Orientation="Vertical">
@@ -77,10 +77,11 @@
                                 <TextBlock Width="150" Text="{Binding DocumentCount}" VerticalAlignment="Center" TextAlignment="Right"/>
                                 <TextBlock Width="150" Text="{Binding ShardsCount}" VerticalAlignment="Center" TextAlignment="Right"/>
                                 <TextBlock Width="150" Text="{Binding DataSpace}" VerticalAlignment="Center" TextAlignment="Right"/>
-                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" CommandParameter="{Binding Name}" Margin="10,0,5,0" Visibility="{Binding isOpen,Converter={StaticResource isShowBrowse}}">browse</HyperlinkButton>
+                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonAction_Click" CommandParameter="{Binding Name}" Tag="{Binding isOpen}" Margin="70,0,5,0">action</HyperlinkButton>
+                                <!--<HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonBrowse_Click" CommandParameter="{Binding Name}" Margin="10,0,5,0" Visibility="{Binding isOpen,Converter={StaticResource isShowBrowse}}">browse</HyperlinkButton>
                                 <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonMapping_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0">mapping</HyperlinkButton>
                                 <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonOpenClose_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="{Binding isOpen,Converter={StaticResource urlCvt}}"/>
-                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonDelete_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="delete"/>
+                                <HyperlinkButton VerticalAlignment="Center" Click="HyperlinkButtonDelete_Click" CommandParameter="{Binding Name}" Margin="5,0,5,0" Content="delete"/>-->
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
